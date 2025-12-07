@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    activity_order.xml - Order Placement Screen Layout
+
+    Purpose: Display menu items for ordering, with order summary on the right side.
+    Layout optimized for tablet landscape orientation.
+
+    Layout structure:
+    - Header bar at top (table number, total price, action buttons)
+    - Main area split:
+      * Left/Center (70%): Grid of menu items
+      * Right (30%): Static order summary panel
+    - Bottom: Submit order button, back button
+-->
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".OrderActivity">
+
+    <!-- TODO: Add header bar (LinearLayout or ConstraintLayout) -->
+    <!-- - TextView showing "Table X" on left -->
+    <!-- - TextView showing total price on right -->
+    <!-- - Back button to return to table selection -->
+    <!-- - Button to view final bill -->
+
+    <!-- TODO: Add vertical divider (View) -->
+    <!-- - Separates menu items area from order summary -->
+    <!-- - Positioned at ~70% from left -->
+    <!-- - Full height -->
+
+    <!-- TODO: Add menu items area (left/center 70%) -->
+    <!-- - RecyclerView with GridLayoutManager -->
+    <!-- - Display all MenuItem objects -->
+    <!-- - Each item shows: name, description, price, image (optional) -->
+    <!-- - Click listener to add item to order -->
+    <!-- - Consider categories if backend adds them (appetizer, main, dessert, drinks) -->
+
+    <!-- TODO: Add order summary area (right 30%) -->
+    <!-- - TextView title "Current Order" at top -->
+    <!-- - RecyclerView showing list of ordered items -->
+    <!-- - Each row shows: item name, quantity, price -->
+    <!-- - Ability to remove items or adjust quantity -->
+    <!-- - Shows real-time updates -->
+    <!-- - Static position (doesn't scroll with menu items) -->
+
+    <!-- TODO: Add loading indicator -->
+    <!-- - ProgressBar for when submitting orders -->
+    <!-- - Or when polling order status -->
+
+    <!-- TODO: Add category filter buttons (optional) -->
+    <!-- - Buttons to filter menu items by category -->
+    <!-- - "All", "Appetizer", "Main", "Dessert", "Drinks" -->
+    <!-- - If backend supports categories -->
+
+    <!-- TODO: Add bottom action bar -->
+    <!-- - Button to submit pending orders -->
+    <!-- - Button to clear current order -->
+    <!-- - Status indicator for pending/submitted orders -->
+
+    <!-- Temporary TextView - REMOVE THIS -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TODO: Add order placement UI\nMenu items on left, Order summary on right"
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <!-- TODO: Optional - Add order status notifications -->
+    <!-- - Banner or snackbar showing when orders are ready -->
+    <!-- - Based on polling results from server -->
+    <!-- - Different colors for different statuses (pending/in_progress/ready) -->
+
+</androidx.constraintlayout.widget.ConstraintLayout>
