@@ -3,6 +3,8 @@ package com.miun.restaurantorderapp;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import android.widget.Button;
+import android.content.Intent;
 
 /**
  * OrderActivity - Order Placement Screen
@@ -36,6 +38,12 @@ public class OrderActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
+
+        Button buttonNext = findViewById(R.id.buttonNext);
+        buttonNext.setOnClickListener(view -> {
+            Intent intent = new Intent(OrderActivity.this, CheckOutActivity.class);
+            startActivity(intent);
+        });
 
         // TODO: Get data from Intent and SharedPreferences
         // - Retrieve the selected table number from Intent

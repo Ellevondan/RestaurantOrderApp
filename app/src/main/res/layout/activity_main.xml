@@ -56,4 +56,13 @@
     <!-- - Display connection status to server -->
     <!-- - Display group ID (for debugging) -->
 
+    <Button
+        android:id="@+id/buttonNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Go to Next Screen" />
+
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
