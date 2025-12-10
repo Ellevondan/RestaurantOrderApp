@@ -1,7 +1,9 @@
 package com.miun.restaurantorderapp;
 
 import android.os.Bundle;
-
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
+import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 import android.widget.Button;
 import android.content.Intent;
@@ -43,6 +45,9 @@ public class OrderActivity extends AppCompatActivity {
         buttonNext.setOnClickListener(view -> {
             Intent intent = new Intent(OrderActivity.this, CheckOutActivity.class);
             startActivity(intent);
+        Button customizeButton= findViewById(R.id.selectbutton);
+        customizeButton.setOnClickListener(v ->{
+            openCustomizationFragment();
         });
 
         // TODO: Get data from Intent and SharedPreferences
@@ -70,6 +75,14 @@ public class OrderActivity extends AppCompatActivity {
         // - Calculate and update total price
     }
 
+    private void openCustomizationFragment(){
+        Fragment fragment= new CustomizationFragment();
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.fragmentContainer, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
     @Override
     protected void onDestroy() {
         super.onDestroy();
