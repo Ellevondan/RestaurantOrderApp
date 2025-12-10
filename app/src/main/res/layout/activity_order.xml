@@ -100,4 +100,13 @@
     <!-- - Based on polling results from server -->
     <!-- - Different colors for different statuses (pending/in_progress/ready) -->
 
+
+    <Button
+        android:id="@+id/buttonNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Go to Next Screen" />
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

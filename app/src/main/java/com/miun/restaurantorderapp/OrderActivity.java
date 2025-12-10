@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
+import android.widget.Button;
+import android.content.Intent;
 
 /**
  * OrderActivity - Order Placement Screen
@@ -39,6 +41,10 @@ public class OrderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
 
+        Button buttonNext = findViewById(R.id.buttonNext);
+        buttonNext.setOnClickListener(view -> {
+            Intent intent = new Intent(OrderActivity.this, CheckOutActivity.class);
+            startActivity(intent);
         Button customizeButton= findViewById(R.id.selectbutton);
         customizeButton.setOnClickListener(v ->{
             openCustomizationFragment();
