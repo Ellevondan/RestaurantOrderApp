@@ -41,14 +41,21 @@ public class OrderActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
 
+        // Back button - navigate to MainActivity
+        Button buttonBack = findViewById(R.id.buttonBack);
+        buttonBack.setOnClickListener(view -> {
+            finish(); // Goes back to MainActivity
+        });
+
+        // Forward button - navigate to CheckOutActivity
         Button buttonNext = findViewById(R.id.buttonNext);
         buttonNext.setOnClickListener(view -> {
             Intent intent = new Intent(OrderActivity.this, CheckOutActivity.class);
             startActivity(intent);
-        Button customizeButton= findViewById(R.id.selectbutton);
-        customizeButton.setOnClickListener(v ->{
-            openCustomizationFragment();
         });
+
+        // Set up dish buttons to open customization fragment
+        setupDishButtons();
 
         // TODO: Get data from Intent and SharedPreferences
         // - Retrieve the selected table number from Intent
@@ -75,8 +82,46 @@ public class OrderActivity extends AppCompatActivity {
         // - Calculate and update total price
     }
 
-    private void openCustomizationFragment(){
-        Fragment fragment= new CustomizationFragment();
+    /**
+     * Set up click listeners for all dish buttons
+     */
+    private void setupDishButtons() {
+        int[] dishButtonIds = {
+            // Appetizers
+            R.id.btnAppetizer1, R.id.btnAppetizer2, R.id.btnAppetizer3,
+            R.id.btnAppetizer4, R.id.btnAppetizer5, R.id.btnAppetizer6,
+            // Mains
+            R.id.btnMain1, R.id.btnMain2, R.id.btnMain3,
+            R.id.btnMain4, R.id.btnMain5, R.id.btnMain6,
+            R.id.btnMain7, R.id.btnMain8, R.id.btnMain9,
+            // Desserts
+            R.id.btnDessert1, R.id.btnDessert2, R.id.btnDessert3,
+            R.id.btnDessert4, R.id.btnDessert5, R.id.btnDessert6,
+            // Drinks
+            R.id.btnDrink1, R.id.btnDrink2, R.id.btnDrink3,
+            R.id.btnDrink4, R.id.btnDrink5, R.id.btnDrink6
+        };
+
+        for (int dishButtonId : dishButtonIds) {
+            Button dishButton = findViewById(dishButtonId);
+            dishButton.setOnClickListener(v -> {
+                String dishName = ((Button) v).getText().toString();
+                openCustomizationFragment(dishName);
+            });
+        }
+    }
+
+    /**
+     * Open the customization fragment with the selected dish
+     * @param dishName The name of the selected dish
+     */
+    private void openCustomizationFragment(String dishName) {
+        Fragment fragment = new CustomizationFragment();
+
+        // TODO: Pass dish information to fragment via Bundle
+        // Bundle args = new Bundle();
+        // args.putString("DISH_NAME", dishName);
+        // fragment.setArguments(args);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.replace(R.id.fragmentContainer, fragment);

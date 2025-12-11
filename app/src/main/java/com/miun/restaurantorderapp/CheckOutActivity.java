@@ -18,11 +18,9 @@ public class CheckOutActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_check_out);
 
-        Button buttonNext = findViewById(R.id.buttonNext);
-        buttonNext.setOnClickListener(view -> {
-            // optional: loop back to main screen
-            Intent intent = new Intent(CheckOutActivity.this, MainActivity.class);
-            startActivity(intent);
+        Button buttonBack = findViewById(R.id.buttonBack);
+        buttonBack.setOnClickListener(view -> {
+            finish(); // Goes back to OrderActivity
         });
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {

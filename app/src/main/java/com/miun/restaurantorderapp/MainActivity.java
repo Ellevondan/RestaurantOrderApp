@@ -40,17 +40,11 @@ public class MainActivity extends AppCompatActivity {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-
-            Button buttonNext = findViewById(R.id.buttonNext);
-            buttonNext.setOnClickListener(view -> {
-                Intent intent = new Intent(MainActivity.this, OrderActivity.class);
-                startActivity(intent);
-            });
-
-
-
             return insets;
         });
+
+        // Set up click listeners for all 12 table buttons
+        setupTableButtons();
 
         // TODO: Check if group ID exists in SharedPreferences
         // - If no group ID exists: Make API call to create new group
@@ -80,4 +74,33 @@ public class MainActivity extends AppCompatActivity {
     // - Method to handle table button clicks
     // - Method to navigate to OrderActivity with selected table number
     // - Method to get/set group ID in SharedPreferences
+
+    /**
+     * Set up click listeners for all 12 table buttons
+     */
+    private void setupTableButtons() {
+        int[] tableButtonIds = {
+            R.id.btnTable1, R.id.btnTable2, R.id.btnTable3, R.id.btnTable4,
+            R.id.btnTable5, R.id.btnTable6, R.id.btnTable7, R.id.btnTable8,
+            R.id.btnTable9, R.id.btnTable10, R.id.btnTable11, R.id.btnTable12
+        };
+
+        for (int i = 0; i < tableButtonIds.length; i++) {
+            final int tableNumber = i + 1; // Table numbers 1-12
+            Button tableButton = findViewById(tableButtonIds[i]);
+            tableButton.setOnClickListener(view -> {
+                openOrderActivity(tableNumber);
+            });
+        }
+    }
+
+    /**
+     * Navigate to OrderActivity with the selected table number
+     * @param tableNumber The selected table number (1-12)
+     */
+    private void openOrderActivity(int tableNumber) {
+        Intent intent = new Intent(MainActivity.this, OrderActivity.class);
+        intent.putExtra("TABLE_NUMBER", tableNumber);
+        startActivity(intent);
+    }
 }

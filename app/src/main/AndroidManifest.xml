@@ -42,6 +42,14 @@
             android:configChanges="orientation|screenSize"
             android:parentActivityName=".MainActivity">
         </activity>
+
+        <activity
+            android:name=".CheckOutActivity"
+            android:exported="false"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|screenSize"
+            android:parentActivityName=".OrderActivity">
+        </activity>
     </application>
 
 </manifest>

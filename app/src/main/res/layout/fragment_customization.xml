@@ -7,26 +7,79 @@
     android:padding="20dp"
     android:background="@android:color/white">
 
+    <!-- Close button in top-right corner -->
+    <Button
+        android:id="@+id/btnCloseFragment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="X"
+        android:textSize="18sp"
+        android:minWidth="48dp"
+        android:minHeight="48dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
     <TextView
         android:id="@+id/tvCustomizationTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Här kan det visas tillval och grejer"
-        android:textSize="20sp"
+        android:text="Customize Your Dish"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginTop="60dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/button2"
-        app:layout_constraintVertical_chainStyle="packed" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <Button
-        android:id="@+id/button2"
+    <TextView
+        android:id="@+id/tvDishName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Button"
+        android:text="Dish Name"
+        android:textSize="20sp"
+        android:layout_marginTop="16dp"
         app:layout_constraintTop_toBottomOf="@id/tvCustomizationTitle"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Placeholder for customization options -->
+    <TextView
+        android:id="@+id/tvCustomizationOptions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add customization options here\n(extras, size, etc.)"
+        android:textAlignment="center"
+        android:layout_marginTop="32dp"
+        app:layout_constraintTop_toBottomOf="@id/tvDishName"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Buttons at the bottom -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="32dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cancel"
+            android:layout_marginEnd="16dp"
+            android:minWidth="120dp" />
+
+        <Button
+            android:id="@+id/btnConfirm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Add to Order"
+            android:minWidth="120dp" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
