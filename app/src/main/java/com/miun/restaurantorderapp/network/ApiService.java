@@ -1,9 +1,16 @@
 package com.miun.restaurantorderapp.network;
 
 import com.miun.restaurantorderapp.models.CarteMenu;
+import com.miun.restaurantorderapp.models.MenuItem;
 import com.miun.restaurantorderapp.models.OrderBundle;
+import com.miun.restaurantorderapp.models.OrderStatusResponse;
 
+import java.io.IOException;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * ApiService - Handles all REST API calls to the Payara application server
@@ -15,14 +22,95 @@ import java.util.List;
  * - Polling order status
  * - Fetching final bill
  *
- * Technology options:
- * - Retrofit (recommended) - Type-safe REST client
- * - Volley - Android's HTTP library
- * - OkHttp - Lower-level HTTP client
  *
  * TODO: Coordinate with backend team for exact API endpoints and request/response formats
  */
 public class ApiService {
+
+    private final RestaurantApiService api;
+
+    public ApiService() {
+        this.api = ApiClient.getRestaurantApiService();
+    }
+
+    // 1) Hämta meny
+    public void fetchMenu(ApiCallback<List<MenuItem>> callback) {
+        api.getMenus().enqueue(new Callback<List<MenuItem>>() {
+            @Override
+            public void onResponse(Call<List<MenuItem>> call, Response<List<MenuItem>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Menu request failed: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<MenuItem>> call, Throwable t) {
+                callback.onError("Network error: " + t.getMessage());
+            }
+        });
+    }
+
+    // 2) Skicka order
+    public void sendOrder(OrderBundle orderBundle, ApiCallback<OrderBundle> callback) {
+        api.sendOrder(orderBundle).enqueue(new Callback<OrderBundle>() {
+            @Override
+            public void onResponse(Call<OrderBundle> call, Response<OrderBundle> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Send order failed: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<OrderBundle> call, Throwable t) {
+                callback.onError("Network error: " + t.getMessage());
+            }
+        });
+    }
+
+    // 7) Kolla status på en order (används av repository/polling)
+    public void checkOrderStatus(Long orderId, ApiCallback<OrderStatusResponse> callback) {
+        api.checkOrderStatus(orderId).enqueue(new Callback<OrderStatusResponse>() {
+            @Override
+            public void onResponse(Call<OrderStatusResponse> call, Response<OrderStatusResponse> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Status request failed: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<OrderStatusResponse> call, Throwable t) {
+                callback.onError("Network error: " + t.getMessage());
+            }
+        });
+    }
+
+    public void testConnection(ApiCallback<String> callback) {
+        api.testConnection().enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Error: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                callback.onError(t.getMessage());
+            }
+        });
+    }
+
+}
+
+
 
     // TODO: Add configuration constants
     // - private static final String BASE_URL = "http://your-payara-server:8080/api/";
@@ -127,4 +215,4 @@ public class ApiService {
     // - Method to check network connectivity
     // - Method to build request headers
     // - Method to log requests/responses for debugging
-}
+
