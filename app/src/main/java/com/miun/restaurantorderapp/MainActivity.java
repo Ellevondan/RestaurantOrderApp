@@ -1,7 +1,10 @@
 package com.miun.restaurantorderapp;
+import com.miun.restaurantorderapp.network.MockApiService;
+import com.miun.restaurantorderapp.network.ApiService;
+import com.miun.restaurantorderapp.network.ApiCallback;
 
 import android.os.Bundle;
-
+import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -31,12 +34,16 @@ public class MainActivity extends AppCompatActivity {
     // - Variable to track currently selected table number
     // - Reference to ApiService for server communication
     // - SharedPreferences to store group ID
+    private MockApiService apiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
+
+        apiService = new MockApiService();
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -95,12 +102,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Navigate to OrderActivity with the selected table number
+     * Navigate to OrderActivity with the selected table number and create group
      * @param tableNumber The selected table number (1-12)
      */
     private void openOrderActivity(int tableNumber) {
-        Intent intent = new Intent(MainActivity.this, OrderActivity.class);
-        intent.putExtra("TABLE_NUMBER", tableNumber);
-        startActivity(intent);
+        Toast.makeText(this, "Skapar grupp...", Toast.LENGTH_SHORT).show();
+
+        apiService.createGroup(new ApiCallback<Long>() {
+            @Override
+            public void onSuccess(Long groupId) {
+                // Spara groupId i intent extras om du vill
+                Intent intent = new Intent(MainActivity.this, OrderActivity.class);
+                intent.putExtra("TABLE_NUMBER", tableNumber);
+                intent.putExtra("GROUP_ID", groupId);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                // Visa fel
+                Toast.makeText(MainActivity.this, "Fel vid skapande av grupp: " + errorMessage, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

@@ -9,9 +9,7 @@ import java.util.List;
 
 /**
  * Mock API Service for testing without backend server.
- * Simulates network delays and returns dummy data.
- *
- * USAGE: Replace ApiService with MockApiService in your test code
+ * Uses ApiCallback<T> for async responses.
  */
 public class MockApiService {
 
@@ -22,45 +20,42 @@ public class MockApiService {
      */
     public void fetchMenu(ApiCallback<List<MenuItem>> callback) {
         simulateNetworkDelay(() -> {
-            // Simulate success
-            List<MenuItem> menu = DummyDataProvider.getDummyMenu();
-            callback.onSuccess(menu);
-
-            // Uncomment to test error handling:
-            // callback.onError("Simulated network error");
+            try {
+                List<MenuItem> menu = DummyDataProvider.getDummyMenu();
+                callback.onSuccess(menu);
+            } catch (Exception e) {
+                callback.onError("Failed to fetch menu: " + e.getMessage());
+            }
         });
     }
 
     /**
-     * Send order (returns dummy order ID after simulated delay)
+     * Send order (returns dummy order bundle with ID after simulated delay)
      */
     public void sendOrder(OrderBundle orderBundle, ApiCallback<OrderBundle> callback) {
         simulateNetworkDelay(() -> {
-            // Create response with order ID
-            OrderStatusResponse response = DummyDataProvider.createDummyOrderResponse();
-
-            // Copy the order bundle and add the ID
-            orderBundle.setId(response.getId());
-            orderBundle.setDone(false);
-
-            callback.onSuccess(orderBundle);
-
-            // Uncomment to test error handling:
-            // callback.onError("Failed to send order");
+            try {
+                OrderStatusResponse response = DummyDataProvider.createDummyOrderResponse();
+                orderBundle.setId(response.getId());
+                orderBundle.setDone(false);
+                callback.onSuccess(orderBundle);
+            } catch (Exception e) {
+                callback.onError("Failed to send order: " + e.getMessage());
+            }
         });
     }
 
     /**
      * Check order status (simulates cooking time)
-     * Will return done=true after 5 calls (5 seconds)
      */
     public void checkOrderStatus(Long orderId, ApiCallback<OrderStatusResponse> callback) {
         simulateNetworkDelay(() -> {
-            OrderStatusResponse response = DummyDataProvider.checkDummyOrderStatus(orderId);
-            callback.onSuccess(response);
-
-            // Uncomment to test error handling:
-            // callback.onError("Failed to check status");
+            try {
+                OrderStatusResponse response = DummyDataProvider.checkDummyOrderStatus(orderId);
+                callback.onSuccess(response);
+            } catch (Exception e) {
+                callback.onError("Failed to check order status: " + e.getMessage());
+            }
         });
     }
 
@@ -69,8 +64,12 @@ public class MockApiService {
      */
     public void createGroup(ApiCallback<Long> callback) {
         simulateNetworkDelay(() -> {
-            Long groupId = DummyDataProvider.createDummyGroupId();
-            callback.onSuccess(groupId);
+            try {
+                Long groupId = DummyDataProvider.createDummyGroupId();
+                callback.onSuccess(groupId);
+            } catch (Exception e) {
+                callback.onError("Failed to create group: " + e.getMessage());
+            }
         });
     }
 
@@ -79,8 +78,12 @@ public class MockApiService {
      */
     public void fetchGroupOrders(Long groupId, ApiCallback<List<OrderBundle>> callback) {
         simulateNetworkDelay(() -> {
-            List<OrderBundle> orders = DummyDataProvider.getDummyOrdersForGroup(groupId);
-            callback.onSuccess(orders);
+            try {
+                List<OrderBundle> orders = DummyDataProvider.getDummyOrdersForGroup(groupId);
+                callback.onSuccess(orders);
+            } catch (Exception e) {
+                callback.onError("Failed to fetch group orders: " + e.getMessage());
+            }
         });
     }
 
@@ -89,7 +92,11 @@ public class MockApiService {
      */
     public void deleteGroup(Long groupId, ApiCallback<Void> callback) {
         simulateNetworkDelay(() -> {
-            callback.onSuccess(null);
+            try {
+                callback.onSuccess(null);
+            } catch (Exception e) {
+                callback.onError("Failed to delete group: " + e.getMessage());
+            }
         });
     }
 
@@ -98,7 +105,11 @@ public class MockApiService {
      */
     public void testConnection(ApiCallback<String> callback) {
         simulateNetworkDelay(() -> {
-            callback.onSuccess("✅ Mock API Connection OK!");
+            try {
+                callback.onSuccess("✅ Mock API Connection OK!");
+            } catch (Exception e) {
+                callback.onError("Connection failed: " + e.getMessage());
+            }
         });
     }
 
