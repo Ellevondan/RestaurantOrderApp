@@ -1,6 +1,7 @@
 package com.miun.restaurantorderapp.network;
 
 import com.miun.restaurantorderapp.models.CarteMenu;
+import com.miun.restaurantorderapp.models.MenuItem;
 import com.miun.restaurantorderapp.models.OrderBundle;
 import com.miun.restaurantorderapp.models.OrderStatusResponse;
 
@@ -17,7 +18,7 @@ public interface RestaurantApiService {
 
     // 1) Hämta meny (Waiter app)
     @GET("api/menu")
-    Call<List<CarteMenu>> getMenus();
+    Call<List<MenuItem>> getMenus();
 
     // 2) Skicka ny order (Waiter app)
     @POST("api/orders")

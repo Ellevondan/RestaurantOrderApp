@@ -1,6 +1,7 @@
 package com.miun.restaurantorderapp.network;
 
 import com.miun.restaurantorderapp.models.CarteMenu;
+import com.miun.restaurantorderapp.models.MenuItem;
 import com.miun.restaurantorderapp.models.OrderBundle;
 import com.miun.restaurantorderapp.models.OrderStatusResponse;
 
@@ -21,10 +22,6 @@ import retrofit2.Response;
  * - Polling order status
  * - Fetching final bill
  *
- * Technology options:
- * - Retrofit (recommended) - Type-safe REST client
- * - Volley - Android's HTTP library
- * - OkHttp - Lower-level HTTP client
  *
  * TODO: Coordinate with backend team for exact API endpoints and request/response formats
  */
@@ -37,10 +34,10 @@ public class ApiService {
     }
 
     // 1) Hämta meny
-    public void fetchMenu(ApiCallback<List<CarteMenu>> callback) {
-        api.getMenus().enqueue(new Callback<List<CarteMenu>>() {
+    public void fetchMenu(ApiCallback<List<MenuItem>> callback) {
+        api.getMenus().enqueue(new Callback<List<MenuItem>>() {
             @Override
-            public void onResponse(Call<List<CarteMenu>> call, Response<List<CarteMenu>> response) {
+            public void onResponse(Call<List<MenuItem>> call, Response<List<MenuItem>> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
                 } else {
@@ -49,7 +46,7 @@ public class ApiService {
             }
 
             @Override
-            public void onFailure(Call<List<CarteMenu>> call, Throwable t) {
+            public void onFailure(Call<List<MenuItem>> call, Throwable t) {
                 callback.onError("Network error: " + t.getMessage());
             }
         });

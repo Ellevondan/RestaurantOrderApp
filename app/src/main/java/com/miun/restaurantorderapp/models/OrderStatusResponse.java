@@ -7,21 +7,25 @@ public class OrderStatusResponse {
     private Long orderId;
 
     @SerializedName("isComplete")
-    private boolean isComplete;
+    private boolean isDone;
 
-    public Long getOrderId() {
+    public Long getId() {
         return orderId;
     }
 
-    public void setOrderId(Long orderId) {
+    public void setId(Long orderId) {
         this.orderId = orderId;
     }
 
-    public boolean isComplete() {
-        return isComplete;
+    public boolean isDone() {
+        return isDone;
     }
 
     public void setComplete(boolean complete) {
-        isComplete = complete;
+        isDone = complete;
+    }
+
+    public void setDone(boolean done) {
+        isDone = done;
     }
 }

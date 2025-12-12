@@ -1,5 +1,8 @@
 package com.miun.restaurantorderapp.models;
 
+import com.google.gson.annotations.SerializedName;
+import java.util.List;
+
 /**
  * OrderBundle - Model class representing an order sent to/from the server
  *
@@ -18,6 +21,47 @@ package com.miun.restaurantorderapp.models;
  * - Timestamp orderTime
  */
 public class OrderBundle {
+
+
+    @SerializedName("id")
+    private Long id;
+
+    @SerializedName("groupID")
+    private Long groupID;
+
+    @SerializedName("orders")
+    private List<ModifiedItem> orders;
+
+    @SerializedName("isDone")
+    private Boolean isDone;
+
+    // Getters och setters
+
+    public Long getId(){
+        return id;
+    }
+    public Long getGroupID(){
+        return groupID;
+    }
+    public List<ModifiedItem>getOrders(){
+        return orders;
+    }
+
+    public void setGroupID(Long groupID) {
+        this.groupID = groupID;
+    }
+
+    public void setOrders(List<ModifiedItem> orders) {
+        this.orders = orders;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setDone(Boolean done) {
+        isDone = done;
+    }
 
     // TODO: Add enum for order categories
     // public enum OrderCategory {

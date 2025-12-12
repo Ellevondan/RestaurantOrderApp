@@ -1,40 +1,145 @@
 package com.miun.restaurantorderapp.models;
 
-/**
- * MenuItem - Model class representing a menu item
- *
- * This matches the backend MenuItem entity from Payara server.
- * Received from server as part of CarteMenu.
- *
- * Backend entity fields:
- * - Long id
- * - String name
- * - String description
- * - Double price
- * - (potentially more fields - check with backend team)
- */
+import com.google.gson.annotations.SerializedName;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Arrays;
 public class MenuItem {
+    @SerializedName("id")
+    private Long id;
 
-    // TODO: Add fields matching backend MenuItem entity
-    // - private Long id;
-    // - private String name;
-    // - private String description;
-    // - private Double price;
-    // - Any other fields from backend (check MenuItem.java on server)
+    @SerializedName("name")
+    private String name;
 
-    // TODO: Add constructors
-    // - Empty constructor for JSON deserialization
-    // - Constructor with all fields
+    @SerializedName("description")
+    private String description;
 
-    // TODO: Add getters and setters for all fields
-    // - getId() / setId()
-    // - getName() / setName()
-    // - getDescription() / setDescription()
-    // - getPrice() / setPrice()
+    @SerializedName("price")
+    private Double price;
 
-    // TODO: Override toString() for debugging
-    // - Return formatted string with item details
+    @SerializedName("allergens")
+    private String allergens;
 
-    // TODO: Consider overriding equals() and hashCode()
-    // - Based on id field for proper comparison in lists
+    @SerializedName("isMeat")
+    private Boolean isMeat;
+
+    @SerializedName("isVegan")
+    private Boolean isVegan;
+
+    @SerializedName("isAppetizer")
+    private Boolean isAppetizer;
+
+    @SerializedName("isDessert")
+    private Boolean isDessert;
+
+    @SerializedName("isHuvud")
+    private Boolean isHuvud;
+
+    @SerializedName("isGlutenFree")
+    private Boolean isGlutenFree;
+
+    @SerializedName("activeTime")
+    private Integer activeTime;
+
+    @SerializedName("waitingTime")
+    private Integer waitingTime;
+
+    @SerializedName("totalTime")
+    private Integer totalTime;
+
+    @SerializedName("canSubstitute")
+    private Boolean canSubstitute;
+
+    @SerializedName("carteAttributesId")
+    private Integer carteAttributesId;
+
+    // Getters o setters
+
+    public String getName(){
+        return name;
+    }
+    public Double getPrice(){
+        return price;
+    }
+    public String getAllergens(){ // ändra
+        return allergens;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setActiveTime(Integer activeTime) {
+        this.activeTime = activeTime;
+    }
+
+    public void setAllergens(String allergens) {
+        this.allergens = allergens;
+    }
+
+    public void setIsAppetizer(Boolean appetizer) {
+        isAppetizer = appetizer;
+    }
+
+    public void setCanSubstitute(Boolean canSubstitute) {
+        this.canSubstitute = canSubstitute;
+    }
+
+    public void setCarteAttributesId(Integer carteAttributesId) {
+        this.carteAttributesId = carteAttributesId;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setIsDessert(Boolean dessert) {
+        isDessert = dessert;
+    }
+
+    public void setIsGlutenFree(Boolean glutenFree) {
+        isGlutenFree = glutenFree;
+    }
+
+    public void setIsHuvud(Boolean huvud) {
+        isHuvud = huvud;
+    }
+
+    public void setIsMeat(Boolean meat) {
+        isMeat = meat;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
+    public void setTotalTime(Integer totalTime) {
+        this.totalTime = totalTime;
+    }
+
+    public void setIsVegan(Boolean vegan) {
+        isVegan = vegan;
+    }
+
+    public void setWaitingTime(Integer waitingTime) {
+        this.waitingTime = waitingTime;
+    }
+
+    public Boolean getIsDessert() {
+        return isDessert;
+    }
+
+    // Helper method för att konvertera allergen-string till lista
+    public List<String> getAllergensList() {
+        if (allergens == null || allergens.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return Arrays.asList(allergens.split(",\\s*"));
+    }
+
+
 }

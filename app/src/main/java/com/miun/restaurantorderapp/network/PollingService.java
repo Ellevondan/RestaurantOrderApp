@@ -45,7 +45,7 @@ public class PollingService extends Service {
         apiRepository.checkOrderStatus(currentOrderId, new ApiCallback<OrderStatusResponse>() {
             @Override
             public void onSuccess(OrderStatusResponse result) {
-                if (result.isComplete()) {
+                if (result.isDone()) {
                     // Rätten är klar! Visa notification
                     showNotification();
                     stopPolling();
