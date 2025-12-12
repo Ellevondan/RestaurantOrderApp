@@ -47,7 +47,19 @@ public class OrderActivity extends AppCompatActivity {
             finish(); // Goes back to MainActivity
         });
 
-        // Forward button - navigate to CheckOutActivity
+        // Send Order button - submit current order to server
+        Button buttonSendOrder = findViewById(R.id.buttonSendOrder);
+        buttonSendOrder.setOnClickListener(view -> {
+            // TODO: Implement order submission to server
+            // - Collect all items from order summary
+            // - Create OrderBundle objects for each item
+            // - Send to Payara server via API
+            // - Show confirmation or error message
+            // For now, just show a placeholder message
+            android.widget.Toast.makeText(this, "Send Order - Not yet implemented", android.widget.Toast.LENGTH_SHORT).show();
+        });
+
+        // Close Tab button - navigate to CheckOutActivity
         Button buttonNext = findViewById(R.id.buttonNext);
         buttonNext.setOnClickListener(view -> {
             Intent intent = new Intent(OrderActivity.this, CheckOutActivity.class);

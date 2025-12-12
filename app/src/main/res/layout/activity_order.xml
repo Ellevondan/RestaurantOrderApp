@@ -486,10 +486,22 @@
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <Button
+        android:id="@+id/buttonSendOrder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Send Order"
+        android:layout_marginBottom="16dp"
+        android:elevation="4dp"
+        android:backgroundTint="#4CAF50"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <Button
         android:id="@+id/buttonNext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Go to Checkout"
+        android:text="Close Tab"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:elevation="4dp"

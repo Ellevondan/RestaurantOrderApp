@@ -8,7 +8,6 @@ This is the waiter-facing application in a restaurant order management system. S
 - Select which table they're working with (1-12)
 - Browse menu items and place orders
 - Submit orders to the kitchen via Payara application server
-- Track order status in real-time
 - Generate final bills for customers
 
 ## System Architecture
@@ -21,12 +20,13 @@ This app communicates with:
 ## App Flow
 
 1. **Launch**: App requests server to create a new group ID (stored locally)
-2. **Menu Load**: Fetches all menu items from server (CarteMenu with MenuItems)
+2. **Menu Load**: Fetches all menu items from server
 3. **Table Selection**: Server selects which table to work on (1-12)
-4. **Order Placement**: Server adds menu items to order with categories (appetizer/main/dessert/rushed)
-5. **Order Submission**: Orders sent to Payara server
-6. **Status Polling**: App continuously polls for order status updates
-7. **Billing**: Fetch all orders for group and calculate total
+4. **Order Placement**: Server adds menu items to order with categories (appetizer/main/dessert)
+5. **Item Customization**: Customization overlay appears when menu item is clicked -
+6. **Checkout/Close Tab**: View order summary with total price
+7. **Order Submission**: Orders sent to Payara server
+8. **Status Polling**: App continuously polls for order status updates
 
 ## Technical Stack
 
@@ -41,14 +41,16 @@ This app communicates with:
 
 ```
 app/src/main/java/com/miun/restaurantorderapp/
-├── MainActivity.java          # Table selection screen
-├── OrderActivity.java         # Order placement screen
+├── MainActivity.java               # Table selection screen (UI complete)
+├── OrderActivity.java              # Order placement screen (UI complete)
+├── CheckOutActivity.java           # Checkout/close tab screen (UI complete)
+├── CustomizationFragment.java     # Item customization overlay (UI complete)
 ├── models/
-│   ├── MenuItem.java         # Menu item entity
-│   ├── CarteMenu.java        # Menu collection
-│   └── OrderBundle.java      # Order entity
+│   ├── MenuItem.java              # Menu item entity (TODO)
+│   ├── CarteMenu.java             # Menu collection (TODO)
+│   └── OrderBundle.java           # Order entity (TODO)
 └── network/
-    └── ApiService.java       # REST API communication
+    └── ApiService.java            # REST API communication (TODO)
 ```
 
 ## Setup Instructions
@@ -77,49 +79,10 @@ app/src/main/java/com/miun/restaurantorderapp/
 
 5. Create tablet AVD:
    - Tools > Device Manager > Create Device
-   - Select Tablet category (e.g., Pixel Tablet)
-   - Choose API level 24 or higher
-   - Set orientation to Landscape
+   - Select Tablet category and Medium tablet
+   - Choose API level 35
 
 6. Run the app
-
-## Development Workflow
-
-### Setting up for team development
-
-1. Each team member should:
-   - Clone the repository
-   - Create their own feature branch
-   - Implement TODOs in assigned files
-
-2. Coordinate with backend team for:
-   - API endpoint URLs
-   - Request/response JSON formats
-   - MenuItem and CarteMenu entity structure
-   - OrderBundle fields and status values
-
-### TODO Implementation Guide
-
-All files contain detailed TODO comments. Start with:
-
-1. **Models** (`models/` package):
-   - Implement MenuItem.java fields matching backend
-   - Implement CarteMenu.java
-   - Implement OrderBundle.java with enums
-
-2. **Network** (`ApiService.java`):
-   - Add HTTP library (Retrofit recommended)
-   - Implement API methods
-   - Get endpoint URLs from backend team
-
-3. **UI Layouts** (`res/layout/`):
-   - Design activity_main.xml (table selection grid)
-   - Design activity_order.xml (split layout: menu items + order summary)
-
-4. **Activities**:
-   - Implement MainActivity logic
-   - Implement OrderActivity logic
-   - Connect UI to backend
 
 ## Backend Integration
 
@@ -141,9 +104,11 @@ Coordinate with backend team for these endpoints:
   "id": Long,
   "name": String,
   "description": String,
-  "price": Double
+  "price": Double  // Price in SEK
 }
 ```
+
+**Note**: UI displays prices in SEK format (e.g., "99 SEK" instead of "$9.99")
 
 #### OrderBundle (to backend)
 ```java
@@ -157,45 +122,63 @@ Coordinate with backend team for these endpoints:
 }
 ```
 
-## Features to Implement
+## Features Implementation Status
 
+### UI Components
 - [x] Project structure and TODOs
-- [ ] Table selection UI
-- [ ] Menu items grid display
-- [ ] Order summary panel
-- [ ] Group ID management
-- [ ] API integration
-- [ ] Order submission
-- [ ] Status polling
-- [ ] Bill calculation
+- [x] Table selection screen (12 table buttons in 3x4 grid)
+- [x] Menu items display with categories (Drinks, Appetizers, Mains, Desserts)
+- [x] Order summary panel (right side of OrderActivity)
+- [x] Customization fragment overlay
+- [x] Checkout screen with order summary and total
+- [x] Navigation between all screens
+- [x] Currency display in SEK (Swedish Krona)
+
+### Backend Integration (TODO)
+- [ ] Group ID management (SharedPreferences + API)
+- [ ] API integration (Retrofit/HTTP library)
+- [ ] Fetch menu items from server
+- [ ] Order submission to server
+- [ ] Status polling for order updates
 - [ ] Error handling
 - [ ] Loading states
+- [ ] Data model implementations (MenuItem, CarteMenu, OrderBundle)
 
 ## Team Coordination
 
-### Before Backend is Ready
-- Implement UI layouts
-- Create model classes
-- Mock API responses for testing
+### Current State
+The app currently:
+- Navigates through all screens (Table Selection → Order → Checkout)
+- Displays sample menu items with prices in SEK
+- Shows placeholder order data in checkout
+- All buttons and navigation working
 
-### After Backend is Ready
-- Update BASE_URL in ApiService
-- Test all API endpoints
-- Verify data formats match
-- Implement error handling
+### Next Steps for Backend Integration
+1. Implement data model classes (MenuItem, CarteMenu, OrderBundle)
+2. Add HTTP library dependency (e.g., Retrofit) to build.gradle
+3. Implement ApiService.java with backend endpoints
+4. Update BASE_URL in ApiService
+5. Connect UI to real data from server
+6. Replace sample/placeholder data with API calls
+7. Implement error handling and loading states
+8. Test all API endpoints with backend team
 
-## Notes
+## Important Notes
 
-- Group ID is stored in SharedPreferences and persists across app launches
+### Implemented Features
 - All screens locked to landscape orientation for tablet
-- Orders are categorized (appetizer/main/dessert/rushed) for kitchen workflow
-- App polls server for order status updates
-- Kitchen app (separate project) receives and processes orders
+- Table selection: 12 tables in 3x4 grid layout
+- Menu items organized by category: Drinks, Appetizers, Mains, Desserts
+- Customization fragment appears as overlay when menu item is clicked
+- Checkout screen displays order summary with total in SEK (Swedish Krona)
+- All navigation working: MainActivity → OrderActivity → CheckOutActivity
+- CheckOutActivity uses sample data for UI demonstration
 
-## License
-
-[Add your license here]
-
-## Contributors
-
-[Add team member names]
+### Still TODO
+- Group ID management (SharedPreferences + server API)
+- Fetching real menu items from Payara server
+- Order submission to backend
+- Order status polling
+- Data models implementation (MenuItem, CarteMenu, OrderBundle)
+- API service implementation
+- Kitchen app integration (separate project)
