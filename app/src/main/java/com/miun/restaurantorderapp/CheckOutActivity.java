@@ -19,8 +19,16 @@ import android.widget.Button;
 import android.content.Intent;
 import android.widget.Toast;
 
+import com.miun.restaurantorderapp.models.ModifiedItem;
+import com.miun.restaurantorderapp.models.OrderBundle;
+import com.miun.restaurantorderapp.network.ApiCallback;
+import com.miun.restaurantorderapp.network.MockApiService;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Locale;
 
 /**
  * CheckOutActivity - Checkout/Close Tab Screen
@@ -35,6 +43,9 @@ import java.util.List;
  */
 public class CheckOutActivity extends AppCompatActivity {
 
+    public static final String EXTRA_GROUP_ID = "GROUP_ID";
+    public static final String EXTRA_TABLE_NUMBER= "TABLE_NUMBER";
+
     // UI Components
     private TextView tableNumberText;
     private RecyclerView orderItemsRecyclerView;
@@ -43,8 +54,16 @@ public class CheckOutActivity extends AppCompatActivity {
     private Button buttonConfirmPayment;
 
     // Data (will be populated from Intent in the future)
-    private List<OrderItem> orderItems;
+    //private List<OrderItem> orderItems;
+    private final List<OrderItem> orderItems = new ArrayList<>();
+    private OrderItemsAdapter adapter;
 
+    private MockApiService api; // sen byter du bara till ApiService
+    private long groupId = -1;
+    private int tableNumber = -1;
+
+    private final Map<Long, MenuItem> menuById = new Hashmap<>();
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,10 +77,25 @@ public class CheckOutActivity extends AppCompatActivity {
         setupRecyclerView();
 
         // Populate with sample data for UI demonstration
-        loadSampleData();
+        //loadSampleData();
 
         // Set up button listeners
         setupButtonListeners();
+
+        api = new MockApiService();
+
+        groupId = getIntent().getLongExtra(EXTRA_GROUP_ID, -1);
+        tableNumber = getIntent().getIntExtra(EXTRA_TABLE_NUMBER, -1);
+
+        tableNumberText.setText(tableNumber > 0 ? ("Table #" + tableNumber) : "Table");
+
+        if (groupId < 0){
+            Toast.makeText(this, "Missing groupId - cannot load checkout", Toast. LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        fetchMenuThenOrders();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -85,8 +119,7 @@ public class CheckOutActivity extends AppCompatActivity {
      * Set up the RecyclerView with adapter and layout manager
      */
     private void setupRecyclerView() {
-        orderItems = new ArrayList<>();
-        OrderItemsAdapter adapter = new OrderItemsAdapter(orderItems);
+        adapter = new OrderItemsAdapter(orderItems);
         orderItemsRecyclerView.setAdapter(adapter);
         orderItemsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
@@ -94,7 +127,7 @@ public class CheckOutActivity extends AppCompatActivity {
     /**
      * Load sample data for UI demonstration
      * TODO: Replace with actual data from Intent/server in the future
-     */
+
     private void loadSampleData() {
         // Sample table number
         tableNumberText.setText("Table #5");
@@ -112,6 +145,9 @@ public class CheckOutActivity extends AppCompatActivity {
         // Calculate and display totals
         updateTotals();
     }
+     */
+
+
 
     /**
      * Calculate and update total amount
