@@ -27,6 +27,8 @@ import retrofit2.Response;
  */
 public class ApiService {
 
+    private static final String TAG = "ApiService";
+
     private final RestaurantApiService api;
 
     public ApiService() {
@@ -107,6 +109,66 @@ public class ApiService {
             }
         });
     }
+
+    public void createGroup(ApiCallback<Long> callback) {
+        api.createGroup().enqueue(new retrofit2.Callback<Long>() {
+            @Override
+            public void onResponse(retrofit2.Call<Long> call,
+                                   retrofit2.Response<Long> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Skicka tillbaka groupID till den som anropade
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Create group failed: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(retrofit2.Call<Long> call, Throwable t) {
+                callback.onError("Network error (createGroup): " + t.getMessage());
+            }
+        });
+    }
+
+
+    public void fetchGroupOrders(Long groupId, ApiCallback<List<OrderBundle>> callback) {
+        api.fetchGroupOrders(groupId).enqueue(new Callback<List<OrderBundle>>() {
+            @Override
+            public void onResponse(Call<List<OrderBundle>> call,
+                                   Response<List<OrderBundle>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Fetch group orders failed: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<OrderBundle>> call, Throwable t) {
+                callback.onError("Network error (fetchGroupOrders): " + t.getMessage());
+            }
+        });
+    }
+
+    public void deleteGroup(Long groupId, ApiCallback<Void> callback) {
+        api.deleteGroup(groupId).enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(null); // inget body, bara OK
+                } else {
+                    callback.onError("Delete group failed: " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                callback.onError("Network error (deleteGroup): " + t.getMessage());
+            }
+        });
+    }
+
+
 
 }
 

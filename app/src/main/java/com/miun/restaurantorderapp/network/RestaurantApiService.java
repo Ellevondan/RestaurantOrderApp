@@ -13,6 +13,7 @@ import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
+import retrofit2.http.DELETE;
 
 public interface RestaurantApiService {
 
@@ -48,5 +49,19 @@ public interface RestaurantApiService {
 
     @GET("api/test")
     Call<String> testConnection();
+
+    // Skapa en ny grupp, backend returnerar t.ex. groupID (Long)
+    @POST("api/groups")
+    Call<Long> createGroup();
+
+    @GET("api/orders")
+    Call<List<OrderBundle>> fetchGroupOrders(
+            @Query("groupID") long groupId
+    );
+
+    @DELETE("api/groups/{groupId}")
+    Call<Void> deleteGroup(
+            @Path("groupId") long groupId
+    );
 
 }
