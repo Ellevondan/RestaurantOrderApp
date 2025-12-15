@@ -6,6 +6,7 @@ import com.miun.restaurantorderapp.models.OrderBundle;
 import com.miun.restaurantorderapp.models.OrderStatusResponse;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -28,7 +29,7 @@ import retrofit2.Response;
 public class ApiService {
 
     private static final String TAG = "ApiService";
-
+    private static final List<Long> activeGroupIds = new ArrayList<>(); // TODO implement this in create/get group
     private final RestaurantApiService api;
 
     public ApiService() {

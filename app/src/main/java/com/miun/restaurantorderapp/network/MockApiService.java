@@ -6,7 +6,7 @@ import com.miun.restaurantorderapp.models.MenuItem;
 import com.miun.restaurantorderapp.models.OrderBundle;
 import com.miun.restaurantorderapp.models.OrderStatusResponse;
 import java.util.List;
-
+import java.util.ArrayList;
 /**
  * Mock API Service for testing without backend server.
  * Uses ApiCallback<T> for async responses.
@@ -14,6 +14,7 @@ import java.util.List;
 public class MockApiService {
 
     private static final int NETWORK_DELAY_MS = 1000;  // Simulate 1 second network delay
+    private static final List<Long> activeGroupIds = new ArrayList<>();
 
     /**
      * Fetch menu (returns dummy data after simulated delay)
@@ -66,6 +67,7 @@ public class MockApiService {
         simulateNetworkDelay(() -> {
             try {
                 Long groupId = DummyDataProvider.createDummyGroupId();
+                activeGroupIds.add(groupId);
                 callback.onSuccess(groupId);
             } catch (Exception e) {
                 callback.onError("Failed to create group: " + e.getMessage());
@@ -79,9 +81,7 @@ public class MockApiService {
     public void getGroupIds(ApiCallback<List<Long>> callback) {
         simulateNetworkDelay(() -> {
             try {
-                // We'll use the DummyDataProvider to get a list of group IDs
-                List<Long> groupIds = DummyDataProvider.getDummyGroupIds();
-                callback.onSuccess(groupIds);
+                simulateNetworkDelay(() -> callback.onSuccess(new ArrayList<>(activeGroupIds)));
             } catch (Exception e) {
                 callback.onError("Failed to get group IDs: " + e.getMessage());
             }
@@ -108,6 +108,7 @@ public class MockApiService {
     public void deleteGroup(Long groupId, ApiCallback<Void> callback) {
         simulateNetworkDelay(() -> {
             try {
+                activeGroupIds.remove(groupId);
                 callback.onSuccess(null);
             } catch (Exception e) {
                 callback.onError("Failed to delete group: " + e.getMessage());
