@@ -6,12 +6,15 @@ import com.miun.restaurantorderapp.network.ApiCallback;
 import android.os.Bundle;
 import android.widget.Toast;
 import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import android.widget.Button;
 import android.content.Intent;
+
+import java.util.List;
 
 
 /**
@@ -52,6 +55,11 @@ public class MainActivity extends AppCompatActivity {
 
         // Set up click listeners for all 12 table buttons
         setupTableButtons();
+
+        Button btnContinueOrder = findViewById(R.id.btnContinueOrder);
+        btnContinueOrder.setOnClickListener(view -> {
+            showGroupSelectionDialog();
+        });
 
         // TODO: Check if group ID exists in SharedPreferences
         // - If no group ID exists: Make API call to create new group
@@ -124,5 +132,37 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "Fel vid skapande av grupp: " + errorMessage, Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    private void showGroupSelectionDialog() {
+        apiService.getGroupIds(new ApiCallback<List<Long>>() {
+            @Override
+            public void onSuccess(List<Long> groupIds) {
+                final CharSequence[] items = new CharSequence[groupIds.size()];
+                for (int i = 0; i < groupIds.size(); i++) {
+                    items[i] = groupIds.get(i).toString();
+                }
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                builder.setTitle("Select group");
+                builder.setItems(items, (dialog, which) -> {
+                    long selectedGroupId = Long.parseLong(items[which].toString());
+                    openOrderActivityWithGroupId(selectedGroupId);
+                });
+                builder.show();
+            }
+
+            @Override
+            public void onError(String errorMessage) {
+                Toast.makeText(MainActivity.this, "Error fetching group IDs: " + errorMessage, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void openOrderActivityWithGroupId(long groupId) {
+        Intent intent = new Intent(MainActivity.this, OrderActivity.class);
+        intent.putExtra("TABLE_NUMBER", -1); 
+        intent.putExtra("GROUP_ID", groupId);
+        startActivity(intent);
     }
 }

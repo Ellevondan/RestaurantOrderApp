@@ -74,6 +74,21 @@ public class MockApiService {
     }
 
     /**
+     * Get all available group IDs (returns a dummy list)
+     */
+    public void getGroupIds(ApiCallback<List<Long>> callback) {
+        simulateNetworkDelay(() -> {
+            try {
+                // We'll use the DummyDataProvider to get a list of group IDs
+                List<Long> groupIds = DummyDataProvider.getDummyGroupIds();
+                callback.onSuccess(groupIds);
+            } catch (Exception e) {
+                callback.onError("Failed to get group IDs: " + e.getMessage());
+            }
+        });
+    }
+
+    /**
      * Fetch all orders for a group (for checkout)
      */
     public void fetchGroupOrders(Long groupId, ApiCallback<List<OrderBundle>> callback) {
