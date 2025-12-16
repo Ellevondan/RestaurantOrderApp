@@ -74,7 +74,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Coke\n$2.99"
+                        android:text=""
                         android:textSize="14sp" />
 
                     <Button
@@ -83,7 +83,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Water\n$1.99"
+                        android:text=""
                         android:textSize="14sp" />
 
                     <Button
@@ -92,7 +92,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Orange Juice\n$3.99"
+                        android:text=""
                         android:textSize="14sp" />
                 </LinearLayout>
 
@@ -107,7 +107,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Coffee\n$3.49"
+                        android:text=""
                         android:textSize="14sp" />
 
                     <Button
@@ -116,7 +116,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Tea\n$2.99"
+                        android:text=""
                         android:textSize="14sp" />
 
                     <Button
@@ -125,7 +125,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Beer\n$5.99"
+                        android:text=""
                         android:textSize="14sp" />
                 </LinearLayout>
 
@@ -150,7 +150,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Caesar Salad\n$9.99"
+                        android:text=""
                         android:textSize="14sp" />
 
                     <Button
@@ -159,7 +159,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Bruschetta\n$7.99"
+                        android:text=""
                         android:textSize="14sp" />
 
                     <Button
@@ -168,7 +168,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Garlic Bread\n$5.99"
+                        android:text=""
                         android:textSize="14sp" />
                 </LinearLayout>
 
@@ -183,7 +183,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Mozzarella Sticks\n$8.99"
+                        android:text=""
                         android:textSize="14sp" />
 
                     <Button
@@ -192,7 +192,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Calamari\n$11.99"
+                        android:text=""
                         android:textSize="14sp" />
 
                     <Button
@@ -201,7 +201,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Wings\n$10.99"
+                        android:text=""
                         android:textSize="14sp" />
                 </LinearLayout>
 
@@ -226,7 +226,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Margherita Pizza\n$12.99"
+                        android:text=""
                         android:textSize="14sp" />
 
                     <Button
@@ -235,7 +235,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Burger &amp; Fries\n$14.99"
+                        android:text=""
                         android:textSize="14sp" />
 
                     <Button
@@ -244,7 +244,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Carbonara\n$13.99"
+                        android:text=""
                         android:textSize="14sp" />
                 </LinearLayout>
 
@@ -259,7 +259,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Grilled Chicken\n$15.99"
+                        android:text=""
                         android:textSize="14sp" />
 
                     <Button
@@ -268,7 +268,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Steak\n$24.99"
+                        android:text=""
                         android:textSize="14sp" />
 
                     <Button
@@ -277,7 +277,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Salmon\n$18.99"
+                        android:text=""
                         android:textSize="14sp" />
                 </LinearLayout>
 
@@ -292,7 +292,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Pasta Alfredo\n$12.99"
+                        android:text=""
                         android:textSize="14sp" />
 
                     <Button
@@ -301,7 +301,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Fish &amp; Chips\n$13.99"
+                        android:text=""
                         android:textSize="14sp" />
 
                     <Button
@@ -310,7 +310,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Lasagna\n$14.99"
+                        android:text=""
                         android:textSize="14sp" />
                 </LinearLayout>
 
@@ -335,7 +335,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Tiramisu\n$6.99"
+                        android:text=""
                         android:textSize="14sp" />
 
                     <Button
@@ -344,7 +344,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Cheesecake\n$7.99"
+                        android:text=""
                         android:textSize="14sp" />
 
                     <Button
@@ -353,7 +353,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Brownie\n$5.99"
+                        android:text=""
                         android:textSize="14sp" />
                 </LinearLayout>
 
@@ -368,7 +368,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Ice Cream\n$4.99"
+                        android:text=""
                         android:textSize="14sp" />
 
                     <Button
@@ -377,7 +377,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Panna Cotta\n$6.99"
+                        android:text=""
                         android:textSize="14sp" />
 
                     <Button
@@ -386,7 +386,7 @@
                         android:layout_height="90dp"
                         android:layout_weight="1"
                         android:layout_margin="4dp"
-                        android:text="Apple Pie\n$5.99"
+                        android:text=""
                         android:textSize="14sp" />
                 </LinearLayout>
 

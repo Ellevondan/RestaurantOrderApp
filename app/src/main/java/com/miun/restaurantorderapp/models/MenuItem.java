@@ -4,7 +4,10 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
-public class MenuItem {
+import java.io.Serializable;
+
+
+public class MenuItem implements java.io.Serializable{
     @SerializedName("id")
     private Long id;
 
@@ -135,6 +138,18 @@ public class MenuItem {
 
     public Boolean getIsDessert() {
         return isDessert;
+    }
+
+    public Boolean getIsAppetizer() {
+        return isAppetizer;
+    }
+
+    public Boolean getIsHuvud() {
+        return isHuvud;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     // Helper method för att konvertera allergen-string till lista
