@@ -4,18 +4,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="20dp"
-    android:background="@android:color/white">
+    android:padding="24dp"
+    android:background="@android:color/white"
+    android:clickable="true"
+    android:focusable="true">
 
-    <!-- Close button in top-right corner -->
     <Button
         android:id="@+id/btnCloseFragment"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:text="X"
         android:textSize="18sp"
-        android:minWidth="48dp"
-        android:minHeight="48dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -23,10 +22,10 @@
         android:id="@+id/tvCustomizationTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Customize Your Dish"
+        android:text="Customize order"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:layout_marginTop="60dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -35,32 +34,116 @@
         android:id="@+id/tvDishName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Dish Name"
-        android:textSize="20sp"
+        android:text="Dish name"
+        android:textSize="22sp"
+        android:textColor="@android:color/black"
         android:layout_marginTop="16dp"
         app:layout_constraintTop_toBottomOf="@id/tvCustomizationTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Placeholder for customization options -->
     <TextView
-        android:id="@+id/tvCustomizationOptions"
+        android:id="@+id/tvPrice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Add customization options here\n(extras, size, etc.)"
-        android:textAlignment="center"
-        android:layout_marginTop="32dp"
+        android:text="0 SEK"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="#4CAF50"
+        android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@id/tvDishName"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Buttons at the bottom -->
+    <LinearLayout
+        android:id="@+id/layoutQuantity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/tvPrice"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Button
+            android:id="@+id/btnDecrease"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="-"
+            android:textSize="20sp" />
+
+        <TextView
+            android:id="@+id/tvQuantity"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:text="1"
+            android:textSize="24sp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:layout_marginHorizontal="16dp"/>
+
+        <Button
+            android:id="@+id/btnIncrease"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:text="+"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/lblAllergens"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Allergens / adjustments:"
+        android:textStyle="bold"
+        android:layout_marginTop="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/layoutQuantity"/>
+
+    <LinearLayout
+        android:id="@+id/layoutAllergens"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/lblAllergens">
+
+        <CheckBox
+            android:id="@+id/cbGluten"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gluten"
+            android:layout_marginEnd="16dp"/>
+
+        <CheckBox
+            android:id="@+id/cbLaktos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lactose"
+            android:layout_marginEnd="16dp"/>
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/etComment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Comment..."
+        android:inputType="textCapSentences|textMultiLine"
+        android:minHeight="80dp"
+        android:gravity="top|start"
+        android:layout_marginTop="16dp"
+        android:background="@android:drawable/edit_text"
+        app:layout_constraintTop_toBottomOf="@id/layoutAllergens"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -70,16 +153,15 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Cancel"
-            android:layout_marginEnd="16dp"
-            android:minWidth="120dp" />
+            android:layout_marginEnd="24dp"
+            android:minWidth="140dp" />
 
         <Button
             android:id="@+id/btnConfirm"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Add to Order"
-            android:minWidth="120dp" />
-
+            android:text="Add"
+            android:minWidth="140dp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

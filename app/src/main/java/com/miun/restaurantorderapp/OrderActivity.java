@@ -1,259 +1,346 @@
 package com.miun.restaurantorderapp;
 
-import android.os.Bundle;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
-import android.widget.Button;
-import androidx.appcompat.app.AppCompatActivity;
-import android.widget.Button;
 import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.miun.restaurantorderapp.models.MenuItem;
 import com.miun.restaurantorderapp.models.ModifiedItem;
-import android.os.Bundle;
-import android.util.Log;
-import androidx.appcompat.app.AppCompatActivity;
-import java.util.List;
+import com.miun.restaurantorderapp.models.OrderBundle;
 import com.miun.restaurantorderapp.network.ApiCallback;
 import com.miun.restaurantorderapp.network.MockApiService;
-import com.miun.restaurantorderapp.models.OrderBundle;
-import android.widget.Toast;
+
 import java.util.ArrayList;
-import android.content.SharedPreferences;
+import java.util.List;
+import java.util.Locale;
 
-
-
-/**
- * OrderActivity - Order Placement Screen
- *
- * Purpose: Displays menu items for the server to create orders for the selected table.
- * Layout: Menu items grid/list on the left/center, order summary on the right side (static).
- *
- * Backend Flow:
- * 1. Display menu items fetched from MainActivity
- * 2. Server adds items to order → Send OrderBundle to Payara server with category (appetizer/main/dessert/rushed)
- * 3. Poll server for order bundle status updates using stored group ID
- * 4. When meal ends → Fetch all order bundles for this group and sum prices
- *
- * Flow: Table Selection Screen -> Order Placement (this screen) -> Submit orders to server
- */
 public class OrderActivity extends AppCompatActivity {
 
-    // TODO: Add class variables
-    // - Variable to store the selected table number (from Intent)
-    // - List<MenuItem> to store menu items (from Intent or loaded from cache)
-    // - List<OrderBundle> to store current pending orders for this table
-    // - Reference to RecyclerView/GridView for menu items display
-    // - Reference to order summary RecyclerView (right side, static display)
-    // - Reference to price TextView
-    // - Reference to submit order button
-    // - String groupId (retrieved from SharedPreferences)
-    // - Handler/Timer for polling order status from server
-    // - Reference to ApiService for server communication
+    private int tableNumber;
+    private long groupId;
 
-    // Klassvariabler för OrderActivity
-    private int tableNumber;                        // tabellnummer från Intent
-    private ArrayList<MenuItem> menuItems;          // menyobjekt
-    private ArrayList<ModifiedItem> selectedItems;  // valda rätter av servern
-    private String groupId;                         // groupId från SharedPreferences
+    private ArrayList<MenuItem> menuItems = new ArrayList<>();
+    private ArrayList<ModifiedItem> selectedItems = new ArrayList<>();
 
-    // UI-referenser
-    private Button buttonSendOrder;                 // knapp för att skicka order
+    private MockApiService apiService;
 
+    // Order summary UI (right panel)
+    private LinearLayout orderItemsContainer;
+    private TextView tvTotal;
+    private TextView tvEmptyOrder;
 
+    // Fragment container overlay
+    private FrameLayout fragmentContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
 
-        MockApiService apiService = new MockApiService();
+        apiService = new MockApiService();
+
+        // --- Read intent extras ---
+        Intent intent = getIntent();
+        tableNumber = intent.getIntExtra("TABLE_NUMBER", -1);
+        groupId = intent.getLongExtra("GROUP_ID", -1L);
+
+        // --- Find UI ---
+        orderItemsContainer = findViewById(R.id.orderItemsContainer);
+        tvTotal = findViewById(R.id.tvTotal);
+        tvEmptyOrder = findViewById(R.id.tvEmptyOrder);
+
+        fragmentContainer = findViewById(R.id.fragmentContainer);
+        if (fragmentContainer != null) {
+            fragmentContainer.setVisibility(View.GONE); // start hidden
+        }
+
+        // Hide/show fragment overlay automatically based on backstack
+        getSupportFragmentManager().addOnBackStackChangedListener(() -> {
+            if (fragmentContainer == null) return;
+            boolean hasOverlay = getSupportFragmentManager().getBackStackEntryCount() > 0;
+            fragmentContainer.setVisibility(hasOverlay ? View.VISIBLE : View.GONE);
+        });
+
+        // --- Receive ModifiedItem from fragment ---
+        getSupportFragmentManager().setFragmentResultListener(
+                CustomizationFragment.REQUEST_KEY,
+                this,
+                (requestKey, bundle) -> {
+                    ModifiedItem item = bundle.getParcelable(CustomizationFragment.RESULT_MODIFIED_ITEM);
+                    if (item == null) return;
+
+                    selectedItems.add(item);
+                    Toast.makeText(
+                            OrderActivity.this,
+                            "Added: " + item.getQuantity() + "x " + item.getName() +
+                                    ((item.getSelectedAllergens() != null && !item.getSelectedAllergens().isEmpty())
+                                            ? " (" + item.getSelectedAllergens() + ")" : ""),
+                            Toast.LENGTH_SHORT
+                    ).show();
+
+                    updateOrderSummaryUI();
+                }
+        );
+
+        // --- Buttons ---
+        Button buttonBack = findViewById(R.id.buttonBack);
+        buttonBack.setOnClickListener(v -> finish());
+
+        Button buttonSendOrder = findViewById(R.id.buttonSendOrder);
+        buttonSendOrder.setOnClickListener(v -> sendOrder());
+
+        Button buttonNext = findViewById(R.id.buttonNext);
+        buttonNext.setOnClickListener(v -> {
+            Intent checkout = new Intent(OrderActivity.this, CheckOutActivity.class);
+            checkout.putExtra(CheckOutActivity.EXTRA_GROUP_ID, groupId);
+            checkout.putExtra(CheckOutActivity.EXTRA_TABLE_NUMBER, tableNumber);
+            startActivity(checkout);
+        });
+
+        // --- Load menu from API and bind to buttons ---
         apiService.fetchMenu(new ApiCallback<List<MenuItem>>() {
             @Override
             public void onSuccess(List<MenuItem> menu) {
                 if (menu == null || menu.isEmpty()) {
-                    Toast.makeText(OrderActivity.this, "No menu items available", Toast.LENGTH_SHORT).show();
-                } else {
-                    menuItems = new ArrayList<>(menu);
-                    setupDishButtons(); // initialize UI with menu items
+                    Toast.makeText(OrderActivity.this, "No menu items available.", Toast.LENGTH_SHORT).show();
+                    disableAllDishButtons();
+                    return;
                 }
+                menuItems = new ArrayList<>(menu);
+                bindMenuToButtons(menuItems);
             }
 
             @Override
             public void onError(String error) {
-                Toast.makeText(OrderActivity.this, "Failed to load menu", Toast.LENGTH_SHORT).show();
+                Toast.makeText(OrderActivity.this, "Failed to load menu: " + error, Toast.LENGTH_SHORT).show();
+                disableAllDishButtons();
             }
         });
 
-        // Get table number from Intent
-        Intent intent = getIntent();
-        tableNumber = intent.getIntExtra("TABLE_NUMBER", -1);
-
-        // Get groupId from SharedPreferences
-        SharedPreferences prefs = getSharedPreferences("RestaurantPrefs", MODE_PRIVATE);
-        groupId = prefs.getString("GROUP_ID", null);
-
-        // Init lists
-        menuItems = new ArrayList<>();
-        selectedItems = new ArrayList<>();
-
-
-        // Back button - navigate to MainActivity
-        Button buttonBack = findViewById(R.id.buttonBack);
-        buttonBack.setOnClickListener(view -> {
-            finish(); // Goes back to MainActivity
-        });
-
-        // Send Order button - submit current order to server
-        // Send Order button
-        buttonSendOrder = findViewById(R.id.buttonSendOrder);
-        buttonSendOrder.setOnClickListener(view -> {
-            List<OrderBundle> bundles = new ArrayList<>();
-            for (ModifiedItem item : selectedItems) {
-                List<ModifiedItem> orderList = new ArrayList<>();
-                orderList.add(item);
-
-                OrderBundle bundle = new OrderBundle(Long.valueOf(groupId), orderList);
-                bundle.setTableNumber(tableNumber);
-                bundles.add(bundle);
-            }
-
-            // Build one order bundle with all selected items
-            OrderBundle bundle = new OrderBundle(Long.valueOf(groupId), new ArrayList<>(selectedItems));
-            bundle.setTableNumber(tableNumber);
-
-// Send to server (MockApiService for now)
-            apiService.sendOrder(bundle, new ApiCallback<OrderBundle>() {
-                @Override
-                public void onSuccess(OrderBundle result) {
-                    Toast.makeText(OrderActivity.this,
-                            "Order sent successfully for table " + tableNumber,
-                            Toast.LENGTH_SHORT).show();
-                    selectedItems.clear();
-                }
-
-                @Override
-                public void onError(String error) {
-                    Toast.makeText(OrderActivity.this,
-                            "Failed to send order: " + error,
-                            Toast.LENGTH_SHORT).show();
-                }
-            });
-
-        });
-
-
-        // Close Tab button - navigate to CheckOutActivity
-        Button buttonNext = findViewById(R.id.buttonNext);
-        buttonNext.setOnClickListener(view -> {
-            Intent CheckOutintent = new Intent(OrderActivity.this, CheckOutActivity.class);
-            startActivity(intent);
-        });
-
-        // Set up dish buttons to open customization fragment
-        setupDishButtons();
-
-        // TODO: Get data from Intent and SharedPreferences
-        // - Retrieve the selected table number from Intent
-        // - Retrieve menu items from Intent (or load from cache)
-        // - Get group ID from SharedPreferences
-        // - Display table number in UI (e.g., "Table 5")
-
-        // TODO: Initialize UI components
-        // - Find references to all views (menu grid, order summary, total, buttons)
-        // - Set up RecyclerView/GridView for menu items on left/center
-        // - Set up RecyclerView for order summary on right side (static)
-        // - Set up adapter for menu items with click listeners
-
-        // TODO: Start polling for order status updates
-        // - Use Handler.postDelayed() or ScheduledExecutorService
-        // - Poll server every X seconds for order bundles with this group ID
-        // - Update UI when order status changes (e.g., ready for pickup)
-        // - Filter out completed orders or show status indicators
-
-        // TODO: Implement menu item selection
-        // - When menu item is clicked, show quantity/customization dialog
-        // - Add item to pending order list
-        // - Update order summary display on right side
-        // - Calculate and update total price
+        updateOrderSummaryUI();
     }
 
-    /**
-     * Set up click listeners for all dish buttons
-     */
-    private void setupDishButtons() {
-        int[] dishButtonIds = {
-                // Appetizers
+    private void sendOrder() {
+        if (groupId <= 0) {
+            Toast.makeText(this, "Missing/invalid GROUP_ID.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (tableNumber <= 0) {
+            Toast.makeText(this, "Missing/invalid table number.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (selectedItems.isEmpty()) {
+            Toast.makeText(this, "Order list is empty!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        OrderBundle bundle = new OrderBundle(groupId, new ArrayList<>(selectedItems));
+        bundle.setTableNumber(tableNumber);
+
+        apiService.sendOrder(bundle, new ApiCallback<OrderBundle>() {
+            @Override
+            public void onSuccess(OrderBundle result) {
+                Toast.makeText(OrderActivity.this, "Order sent!", Toast.LENGTH_SHORT).show();
+                selectedItems.clear();
+                updateOrderSummaryUI();
+            }
+
+            @Override
+            public void onError(String error) {
+                Toast.makeText(OrderActivity.this, "Failed to send order: " + error, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // ---------------- Menu -> Buttons ----------------
+
+    private void bindMenuToButtons(List<MenuItem> menu) {
+        // Categorize using flags from MenuItem
+        List<MenuItem> appetizers = new ArrayList<>();
+        List<MenuItem> mains = new ArrayList<>();
+        List<MenuItem> desserts = new ArrayList<>();
+        List<MenuItem> drinks = new ArrayList<>();
+
+        for (MenuItem mi : menu) {
+            if (mi == null) continue;
+            if (Boolean.TRUE.equals(mi.getIsAppetizer())) appetizers.add(mi);
+            else if (Boolean.TRUE.equals(mi.getIsHuvud())) mains.add(mi);
+            else if (Boolean.TRUE.equals(mi.getIsDessert())) desserts.add(mi);
+            else drinks.add(mi); // fallback
+        }
+
+        int[] appetizerIds = {
                 R.id.btnAppetizer1, R.id.btnAppetizer2, R.id.btnAppetizer3,
-                R.id.btnAppetizer4, R.id.btnAppetizer5, R.id.btnAppetizer6,
-                // Mains
+                R.id.btnAppetizer4, R.id.btnAppetizer5, R.id.btnAppetizer6
+        };
+
+        int[] mainIds = {
                 R.id.btnMain1, R.id.btnMain2, R.id.btnMain3,
                 R.id.btnMain4, R.id.btnMain5, R.id.btnMain6,
-                R.id.btnMain7, R.id.btnMain8, R.id.btnMain9,
-                // Desserts
+                R.id.btnMain7, R.id.btnMain8, R.id.btnMain9
+        };
+
+        int[] dessertIds = {
                 R.id.btnDessert1, R.id.btnDessert2, R.id.btnDessert3,
-                R.id.btnDessert4, R.id.btnDessert5, R.id.btnDessert6,
-                // Drinks
+                R.id.btnDessert4, R.id.btnDessert5, R.id.btnDessert6
+        };
+
+        int[] drinkIds = {
                 R.id.btnDrink1, R.id.btnDrink2, R.id.btnDrink3,
                 R.id.btnDrink4, R.id.btnDrink5, R.id.btnDrink6
         };
 
-        for (int dishButtonId : dishButtonIds) {
-            Button dishButton = findViewById(dishButtonId);
-            dishButton.setOnClickListener(v -> {
-                String dishName = ((Button) v).getText().toString();
-                openCustomizationFragment(dishName);
-            });
+        bindButtons(appetizerIds, appetizers);
+        bindButtons(mainIds, mains);
+        bindButtons(dessertIds, desserts);
+        bindButtons(drinkIds, drinks);
+    }
+
+    private void bindButtons(int[] buttonIds, List<MenuItem> items) {
+        for (int i = 0; i < buttonIds.length; i++) {
+            Button b = findViewById(buttonIds[i]);
+            if (b == null) continue;
+
+            if (i < items.size()) {
+                MenuItem mi = items.get(i);
+
+                b.setEnabled(true);
+                b.setAlpha(1f);
+                b.setTag(mi);
+
+                String name = (mi.getName() != null) ? mi.getName() : "";
+                double price = (mi.getPrice() != null) ? mi.getPrice() : 0.0;
+                b.setText(String.format(Locale.getDefault(), "%s\n%.0f SEK", name, price));
+
+                b.setOnClickListener(v -> {
+                    Object tag = v.getTag();
+                    if (tag instanceof MenuItem) {
+                        openCustomizationFragment((MenuItem) tag);
+                    }
+                });
+
+            } else {
+                b.setEnabled(false);
+                b.setAlpha(0.35f);
+                b.setTag(null);
+                b.setText("—");
+                b.setOnClickListener(null);
+            }
         }
     }
 
-    /**
-     * Open the customization fragment with the selected dish
-     * @param dishName The name of the selected dish
-     */
-    private void openCustomizationFragment(String dishName) {
-        Fragment fragment = new CustomizationFragment();
+    private void disableAllDishButtons() {
+        int[] dishButtonIds = {
+                R.id.btnAppetizer1, R.id.btnAppetizer2, R.id.btnAppetizer3,
+                R.id.btnAppetizer4, R.id.btnAppetizer5, R.id.btnAppetizer6,
+                R.id.btnMain1, R.id.btnMain2, R.id.btnMain3,
+                R.id.btnMain4, R.id.btnMain5, R.id.btnMain6,
+                R.id.btnMain7, R.id.btnMain8, R.id.btnMain9,
+                R.id.btnDessert1, R.id.btnDessert2, R.id.btnDessert3,
+                R.id.btnDessert4, R.id.btnDessert5, R.id.btnDessert6,
+                R.id.btnDrink1, R.id.btnDrink2, R.id.btnDrink3,
+                R.id.btnDrink4, R.id.btnDrink5, R.id.btnDrink6
+        };
 
-        // TODO: Pass dish information to fragment via Bundle
-        // Bundle args = new Bundle();
-        // args.putString("DISH_NAME", dishName);
-        // fragment.setArguments(args);
-
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.fragmentContainer, fragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
-    }
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // TODO: Stop polling when activity is destroyed
-        // - Cancel Handler callbacks or shutdown ExecutorService
+        for (int id : dishButtonIds) {
+            Button b = findViewById(id);
+            if (b == null) continue;
+            b.setEnabled(false);
+            b.setAlpha(0.35f);
+        }
     }
 
-    // TODO: Add order submission methods
-    // - Method to submit single order bundle to server
-    //   * Include: group ID, table number, menu item, quantity, category (appetizer/main/dessert/rushed)
-    //   * Send POST request to Payara server
-    //   * Handle success/error responses
-    // - Method to validate order before submission
+    private void openCustomizationFragment(MenuItem hit) {
+        if (hit == null) return;
 
-    // TODO: Add polling methods
-    // - Method to poll server for order bundles by group ID
-    // - Method to update UI based on order status
-    // - Method to check if orders are ready for pickup
+        Long id = hit.getId();
+        String name = (hit.getName() != null) ? hit.getName() : "";
+        Double price = hit.getPrice();
 
-    // TODO: Add UI update methods
-    // - Method to add item to order summary
-    // - Method to remove item from order summary
-    // - Method to update order summary display
-    // - Method to calculate and update total price
-    // - Method to clear current pending orders
+        if (id == null || name.isEmpty()) {
+            Toast.makeText(this, "Menu item data missing.", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-    // TODO: Add end-of-meal methods
-    // - Method to fetch all order bundles for this group
-    // - Method to calculate final bill (sum all order prices)
-    // - Method to display final bill to user
-    // - Option to mark group as completed/paid
+        CustomizationFragment fragment = new CustomizationFragment();
+        Bundle args = new Bundle();
+        args.putLong(CustomizationFragment.ARG_MENU_ID, id);
+        args.putString(CustomizationFragment.ARG_MENU_NAME, name);
+        args.putDouble(CustomizationFragment.ARG_MENU_PRICE, (price != null) ? price : 0.0);
+        fragment.setArguments(args);
+
+        if (fragmentContainer != null) fragmentContainer.setVisibility(View.VISIBLE);
+
+        FragmentTransaction tx = getSupportFragmentManager().beginTransaction();
+        tx.replace(R.id.fragmentContainer, fragment);
+        tx.addToBackStack("customization");
+        tx.commit();
+    }
+
+    // ---------------- Order summary UI ----------------
+
+    private void updateOrderSummaryUI() {
+        if (tvTotal != null) {
+            double total = 0.0;
+            for (ModifiedItem mi : selectedItems) {
+                if (mi == null) continue;
+                int q = (mi.getQuantity() != null) ? mi.getQuantity() : 0;
+                double p = (mi.getPrice() != null) ? mi.getPrice() : 0.0;
+                total += q * p;
+            }
+            tvTotal.setText(String.format(Locale.getDefault(), "Total: %.0f SEK", total));
+        }
+
+        if (orderItemsContainer == null) return;
+
+        // Remove all dynamic children but keep tvEmptyOrder
+        for (int i = orderItemsContainer.getChildCount() - 1; i >= 0; i--) {
+            View child = orderItemsContainer.getChildAt(i);
+            if (child != null && child.getId() != R.id.tvEmptyOrder) {
+                orderItemsContainer.removeViewAt(i);
+            }
+        }
+
+        if (tvEmptyOrder != null) {
+            tvEmptyOrder.setVisibility(selectedItems.isEmpty() ? View.VISIBLE : View.GONE);
+        }
+
+        if (selectedItems.isEmpty()) return;
+
+        for (ModifiedItem item : selectedItems) {
+            if (item == null) continue;
+
+            int q = (item.getQuantity() != null) ? item.getQuantity() : 1;
+            String name = (item.getName() != null) ? item.getName() : "";
+            double p = (item.getPrice() != null) ? item.getPrice() : 0.0;
+
+            String allergens = item.getSelectedAllergens();
+            String comments = item.getComments();
+
+            String line = String.format(Locale.getDefault(),
+                    "%dx %s  %.0f SEK", q, name, (q * p));
+
+            if (allergens != null && !allergens.isEmpty()) {
+                line += "\nAllergens: " + allergens;
+            }
+            if (comments != null && !comments.isEmpty()) {
+                line += "\nNote: " + comments;
+            }
+
+            TextView tv = new TextView(this);
+            tv.setText(line);
+            tv.setTextSize(14f);
+            tv.setPadding(0, 10, 0, 10);
+
+            orderItemsContainer.addView(tv);
+        }
+    }
 }

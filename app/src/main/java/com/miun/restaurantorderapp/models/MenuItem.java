@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
+
 public class MenuItem {
     @SerializedName("id")
     private Long id;
@@ -53,97 +54,44 @@ public class MenuItem {
     @SerializedName("carteAttributesId")
     private Integer carteAttributesId;
 
-    // Getters o setters
+    // Basic getters
+    public Long getId() { return id; }
+    public String getName() { return name; }
+    public Double getPrice() { return price; }
+    public String getAllergens() { return allergens; }
 
-    public Long getId() {
-        return id;
-    }
+    // Flag getters
+    public Boolean getIsAppetizer() { return isAppetizer; }
+    public Boolean getIsDessert() { return isDessert; }
+    public Boolean getIsHuvud() { return isHuvud; }
 
-    public String getName(){
-        return name;
-    }
-    public Double getPrice(){
-        return price;
-    }
-    public String getAllergens(){ // ändra
-        return allergens;
-    }
+    // Setters
+    public void setId(Long id) { this.id = id; }
+    public void setName(String name) { this.name = name; }
+    public void setDescription(String description) { this.description = description; }
+    public void setPrice(Double price) { this.price = price; }
+    public void setAllergens(String allergens) { this.allergens = allergens; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public void setIsAppetizer(Boolean appetizer) { isAppetizer = appetizer; }
+    public void setIsDessert(Boolean dessert) { isDessert = dessert; }
+    public void setIsHuvud(Boolean huvud) { isHuvud = huvud; }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+    public void setIsMeat(Boolean meat) { isMeat = meat; }
+    public void setIsVegan(Boolean vegan) { isVegan = vegan; }
+    public void setIsGlutenFree(Boolean glutenFree) { isGlutenFree = glutenFree; }
 
-    public void setActiveTime(Integer activeTime) {
-        this.activeTime = activeTime;
-    }
+    public void setActiveTime(Integer activeTime) { this.activeTime = activeTime; }
+    public void setWaitingTime(Integer waitingTime) { this.waitingTime = waitingTime; }
+    public void setTotalTime(Integer totalTime) { this.totalTime = totalTime; }
 
-    public void setAllergens(String allergens) {
-        this.allergens = allergens;
-    }
+    public void setCanSubstitute(Boolean canSubstitute) { this.canSubstitute = canSubstitute; }
+    public void setCarteAttributesId(Integer carteAttributesId) { this.carteAttributesId = carteAttributesId; }
 
-    public void setIsAppetizer(Boolean appetizer) {
-        isAppetizer = appetizer;
-    }
-
-    public void setCanSubstitute(Boolean canSubstitute) {
-        this.canSubstitute = canSubstitute;
-    }
-
-    public void setCarteAttributesId(Integer carteAttributesId) {
-        this.carteAttributesId = carteAttributesId;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public void setIsDessert(Boolean dessert) {
-        isDessert = dessert;
-    }
-
-    public void setIsGlutenFree(Boolean glutenFree) {
-        isGlutenFree = glutenFree;
-    }
-
-    public void setIsHuvud(Boolean huvud) {
-        isHuvud = huvud;
-    }
-
-    public void setIsMeat(Boolean meat) {
-        isMeat = meat;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
-    public void setTotalTime(Integer totalTime) {
-        this.totalTime = totalTime;
-    }
-
-    public void setIsVegan(Boolean vegan) {
-        isVegan = vegan;
-    }
-
-    public void setWaitingTime(Integer waitingTime) {
-        this.waitingTime = waitingTime;
-    }
-
-    public Boolean getIsDessert() {
-        return isDessert;
-    }
-
-    // Helper method för att konvertera allergen-string till lista
+    // Helper: "Gluten, Dairy" -> ["Gluten","Dairy"]
     public List<String> getAllergensList() {
-        if (allergens == null || allergens.isEmpty()) {
+        if (allergens == null || allergens.trim().isEmpty()) {
             return new ArrayList<>();
         }
         return Arrays.asList(allergens.split(",\\s*"));
     }
-
-
 }
