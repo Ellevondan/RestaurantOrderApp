@@ -141,7 +141,7 @@ public class DummyDataProvider {
         OrderBundle order1 = new OrderBundle();
         order1.setId(100L);
         order1.setGroupID(groupId);
-        order1.setDone(true);
+        order1.setIsDone(true);
 
         List<ModifiedItem> items1 = new ArrayList<>();
         ModifiedItem item1 = new ModifiedItem();
@@ -161,7 +161,7 @@ public class DummyDataProvider {
         OrderBundle order2 = new OrderBundle();
         order2.setId(101L);
         order2.setGroupID(groupId);
-        order2.setDone(true);
+        order2.setIsDone(true);
 
         List<ModifiedItem> items2 = new ArrayList<>();
         ModifiedItem item2 = new ModifiedItem();

@@ -8,6 +8,22 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.widget.Button;
 import android.content.Intent;
 
+
+import com.miun.restaurantorderapp.models.MenuItem;
+import com.miun.restaurantorderapp.models.ModifiedItem;
+import android.os.Bundle;
+import android.util.Log;
+import androidx.appcompat.app.AppCompatActivity;
+import java.util.List;
+import com.miun.restaurantorderapp.network.ApiCallback;
+import com.miun.restaurantorderapp.network.MockApiService;
+import com.miun.restaurantorderapp.models.OrderBundle;
+import android.widget.Toast;
+import java.util.ArrayList;
+import android.content.SharedPreferences;
+
+
+
 /**
  * OrderActivity - Order Placement Screen
  *
@@ -36,10 +52,52 @@ public class OrderActivity extends AppCompatActivity {
     // - Handler/Timer for polling order status from server
     // - Reference to ApiService for server communication
 
+    // Klassvariabler för OrderActivity
+    private int tableNumber;                        // tabellnummer från Intent
+    private ArrayList<MenuItem> menuItems;          // menyobjekt
+    private ArrayList<ModifiedItem> selectedItems;  // valda rätter av servern
+    private String groupId;                         // groupId från SharedPreferences
+
+    // UI-referenser
+    private Button buttonSendOrder;                 // knapp för att skicka order
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order);
+
+        MockApiService apiService = new MockApiService();
+        apiService.fetchMenu(new ApiCallback<List<MenuItem>>() {
+            @Override
+            public void onSuccess(List<MenuItem> menu) {
+                if (menu == null || menu.isEmpty()) {
+                    Toast.makeText(OrderActivity.this, "No menu items available", Toast.LENGTH_SHORT).show();
+                } else {
+                    menuItems = new ArrayList<>(menu);
+                    setupDishButtons(); // initialize UI with menu items
+                }
+            }
+
+            @Override
+            public void onError(String error) {
+                Toast.makeText(OrderActivity.this, "Failed to load menu", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Get table number from Intent
+        Intent intent = getIntent();
+        tableNumber = intent.getIntExtra("TABLE_NUMBER", -1);
+
+        // Get groupId from SharedPreferences
+        SharedPreferences prefs = getSharedPreferences("RestaurantPrefs", MODE_PRIVATE);
+        groupId = prefs.getString("GROUP_ID", null);
+
+        // Init lists
+        menuItems = new ArrayList<>();
+        selectedItems = new ArrayList<>();
+
 
         // Back button - navigate to MainActivity
         Button buttonBack = findViewById(R.id.buttonBack);
@@ -48,21 +106,48 @@ public class OrderActivity extends AppCompatActivity {
         });
 
         // Send Order button - submit current order to server
-        Button buttonSendOrder = findViewById(R.id.buttonSendOrder);
+        // Send Order button
+        buttonSendOrder = findViewById(R.id.buttonSendOrder);
         buttonSendOrder.setOnClickListener(view -> {
-            // TODO: Implement order submission to server
-            // - Collect all items from order summary
-            // - Create OrderBundle objects for each item
-            // - Send to Payara server via API
-            // - Show confirmation or error message
-            // For now, just show a placeholder message
-            android.widget.Toast.makeText(this, "Send Order - Not yet implemented", android.widget.Toast.LENGTH_SHORT).show();
+            List<OrderBundle> bundles = new ArrayList<>();
+            for (ModifiedItem item : selectedItems) {
+                List<ModifiedItem> orderList = new ArrayList<>();
+                orderList.add(item);
+
+                OrderBundle bundle = new OrderBundle(Long.valueOf(groupId), orderList);
+                bundle.setTableNumber(tableNumber);
+                bundles.add(bundle);
+            }
+
+            // Build one order bundle with all selected items
+            OrderBundle bundle = new OrderBundle(Long.valueOf(groupId), new ArrayList<>(selectedItems));
+            bundle.setTableNumber(tableNumber);
+
+// Send to server (MockApiService for now)
+            apiService.sendOrder(bundle, new ApiCallback<OrderBundle>() {
+                @Override
+                public void onSuccess(OrderBundle result) {
+                    Toast.makeText(OrderActivity.this,
+                            "Order sent successfully for table " + tableNumber,
+                            Toast.LENGTH_SHORT).show();
+                    selectedItems.clear();
+                }
+
+                @Override
+                public void onError(String error) {
+                    Toast.makeText(OrderActivity.this,
+                            "Failed to send order: " + error,
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+
         });
+
 
         // Close Tab button - navigate to CheckOutActivity
         Button buttonNext = findViewById(R.id.buttonNext);
         buttonNext.setOnClickListener(view -> {
-            Intent intent = new Intent(OrderActivity.this, CheckOutActivity.class);
+            Intent CheckOutintent = new Intent(OrderActivity.this, CheckOutActivity.class);
             startActivity(intent);
         });
 
@@ -99,19 +184,19 @@ public class OrderActivity extends AppCompatActivity {
      */
     private void setupDishButtons() {
         int[] dishButtonIds = {
-            // Appetizers
-            R.id.btnAppetizer1, R.id.btnAppetizer2, R.id.btnAppetizer3,
-            R.id.btnAppetizer4, R.id.btnAppetizer5, R.id.btnAppetizer6,
-            // Mains
-            R.id.btnMain1, R.id.btnMain2, R.id.btnMain3,
-            R.id.btnMain4, R.id.btnMain5, R.id.btnMain6,
-            R.id.btnMain7, R.id.btnMain8, R.id.btnMain9,
-            // Desserts
-            R.id.btnDessert1, R.id.btnDessert2, R.id.btnDessert3,
-            R.id.btnDessert4, R.id.btnDessert5, R.id.btnDessert6,
-            // Drinks
-            R.id.btnDrink1, R.id.btnDrink2, R.id.btnDrink3,
-            R.id.btnDrink4, R.id.btnDrink5, R.id.btnDrink6
+                // Appetizers
+                R.id.btnAppetizer1, R.id.btnAppetizer2, R.id.btnAppetizer3,
+                R.id.btnAppetizer4, R.id.btnAppetizer5, R.id.btnAppetizer6,
+                // Mains
+                R.id.btnMain1, R.id.btnMain2, R.id.btnMain3,
+                R.id.btnMain4, R.id.btnMain5, R.id.btnMain6,
+                R.id.btnMain7, R.id.btnMain8, R.id.btnMain9,
+                // Desserts
+                R.id.btnDessert1, R.id.btnDessert2, R.id.btnDessert3,
+                R.id.btnDessert4, R.id.btnDessert5, R.id.btnDessert6,
+                // Drinks
+                R.id.btnDrink1, R.id.btnDrink2, R.id.btnDrink3,
+                R.id.btnDrink4, R.id.btnDrink5, R.id.btnDrink6
         };
 
         for (int dishButtonId : dishButtonIds) {

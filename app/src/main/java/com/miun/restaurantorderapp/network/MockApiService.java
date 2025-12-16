@@ -38,7 +38,7 @@ public class MockApiService {
             try {
                 OrderStatusResponse response = DummyDataProvider.createDummyOrderResponse();
                 orderBundle.setId(response.getId());
-                orderBundle.setDone(false);
+                orderBundle.setIsDone(false);
                 callback.onSuccess(orderBundle);
             } catch (Exception e) {
                 callback.onError("Failed to send order: " + e.getMessage());
