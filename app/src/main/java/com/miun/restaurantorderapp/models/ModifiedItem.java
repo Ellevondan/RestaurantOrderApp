@@ -27,6 +27,14 @@ public class ModifiedItem {
     @SerializedName("orderedAt")
     private String orderedAt;  // "2025-12-11T12:34:56"
 
+    public ModifiedItem(MenuItem menuItem) {
+        this.originalId = menuItem.getId();
+        this.name = menuItem.getName();
+        this.price = menuItem.getPrice();
+    }
+    public ModifiedItem() {
+    }
+
     private transient Double price;
 
     // Getters o setters
