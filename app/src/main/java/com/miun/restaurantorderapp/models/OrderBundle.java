@@ -35,69 +35,124 @@ public class OrderBundle {
     @SerializedName("isDone")
     private Boolean isDone;
 
-    // Getters och setters
 
-    public Long getId(){
-        return id;
-    }
-    public Long getGroupID(){
-        return groupID;
-    }
-    public List<ModifiedItem>getOrders(){
-        return orders;
-    }
-
-    public void setGroupID(Long groupID) {
-        this.groupID = groupID;
-    }
-
-    public void setOrders(List<ModifiedItem> orders) {
-        this.orders = orders;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setDone(Boolean done) {
-        isDone = done;
-    }
 
     // TODO: Add enum for order categories
-    // public enum OrderCategory {
-    //     APPETIZER, MAIN, DESSERT, RUSHED
-    // }
-
+    public enum OrderCategory {
+        APPETIZER,
+        MAIN,
+        DESSERT,
+        RUSHED
+    }
     // TODO: Add enum for order status
-    // public enum OrderStatus {
-    //     PENDING, IN_PROGRESS, READY, COMPLETED
-    // }
+    public enum OrderStatus {
+        PENDING,       // Order has been created but not yet sent to kitchen
+        IN_PROGRESS,   // Kitchen is preparing the order
+        READY,         // Order is ready to be served
+        COMPLETED      // Order has been served / finished
+    }
+
 
     // TODO: Add fields
-    // - private Long id; (from server)
-    // - private String groupId;
-    // - private Integer tableNumber;
-    // - private Long menuItemId; (or MenuItem object)
-    // - private String menuItemName; (for display)
-    // - private Integer quantity;
-    // - private OrderCategory category;
-    // - private OrderStatus status;
-    // - private Double price;
-    // - private Double activeTime; (from backend)
-    // - private Double idleTime; (from backend)
-    // - private String orderTime; (timestamp)
+
+
+    private Integer tableNumber;     // which table ordered this
+    private Long menuItemId;         // menu item ID
+    private String menuItemName;     // name of the menu item
+    private Integer quantity;        // how many of this item
+    private OrderCategory category;  // APPETIZER, MAIN, DESSERT, RUSHED
+    private OrderStatus status;      // PENDING, IN_PROGRESS, READY, COMPLETED
+    private Double price;            // price of this item
+    private Double activeTime;       // for kitchen multitasking
+    private Double idleTime;         // for kitchen multitasking
+    private String orderTime;        // timestamp of the order
+
 
     // TODO: Add constructors
-    // - Empty constructor for JSON deserialization
-    // - Constructor for creating new orders (before sending to server)
-    // - Constructor with all fields (for received orders)
+    public OrderBundle() {
+    }
+    public OrderBundle(Long groupID, List<ModifiedItem> orders) {
+        this.groupID = groupID;
+        this.orders = orders;
+        this.isDone = false;  // new orders are not done yet
+    }
+    public OrderBundle(Long id, Long groupID, List<ModifiedItem> orders, Boolean isDone) {
+        this.id = id;
+        this.groupID = groupID;
+        this.orders = orders;
+        this.isDone = isDone;
+    }
+
+
+
 
     // TODO: Add getters and setters for all fields
+    // Getters and Setters
+
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+
+    public Long getGroupID() { return groupID; }
+    public void setGroupID(Long groupID) { this.groupID = groupID; }
+
+    public List<ModifiedItem> getOrders() { return orders; }
+    public void setOrders(List<ModifiedItem> orders) { this.orders = orders; }
+
+    public Boolean getIsDone() { return isDone; }
+    public void setIsDone(Boolean isDone) { this.isDone = isDone; }
+
+    public Integer getTableNumber() { return tableNumber; }
+    public void setTableNumber(Integer tableNumber) { this.tableNumber = tableNumber; }
+
+    public Long getMenuItemId() { return menuItemId; }
+    public void setMenuItemId(Long menuItemId) { this.menuItemId = menuItemId; }
+
+    public String getMenuItemName() { return menuItemName; }
+    public void setMenuItemName(String menuItemName) { this.menuItemName = menuItemName; }
+
+    public Integer getQuantity() { return quantity; }
+    public void setQuantity(Integer quantity) { this.quantity = quantity; }
+
+    public OrderCategory getCategory() { return category; }
+    public void setCategory(OrderCategory category) { this.category = category; }
+
+    public OrderStatus getStatus() { return status; }
+    public void setStatus(OrderStatus status) { this.status = status; }
+
+    public Double getPrice() { return price; }
+    public void setPrice(Double price) { this.price = price; }
+
+    public Double getActiveTime() { return activeTime; }
+    public void setActiveTime(Double activeTime) { this.activeTime = activeTime; }
+
+    public Double getIdleTime() { return idleTime; }
+    public void setIdleTime(Double idleTime) { this.idleTime = idleTime; }
+
+    public String getOrderTime() { return orderTime; }
+    public void setOrderTime(String orderTime) { this.orderTime = orderTime; }
 
     // TODO: Add helper methods
-    // - Method to calculate total price (quantity * item price)
-    // - Method to check if order is ready for pickup
+// Calculate total price of the order bundle
+    public double calculateTotalPrice() {
+        if (orders == null || orders.isEmpty()) return 0.0;
+
+        double total = 0.0;
+        for (ModifiedItem item : orders) {
+            if (item != null && item.getQuantity() != null && item.getPrice() != null) {
+                total += item.getQuantity() * item.getPrice();
+            }
+        }
+        return total;
+    }
+
+    // Check if the order is ready for pickup
+    public boolean isReadyForPickup() {
+        return status != null && status == OrderStatus.READY;
+    }
+
     // - Method to format order time for display
 
     // TODO: Override toString() for debugging
+
+
 }

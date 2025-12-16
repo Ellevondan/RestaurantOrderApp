@@ -119,6 +119,19 @@ public class DummyDataProvider {
     }
 
     /**
+     * Provides a static list of dummy group IDs.
+     * @return A list of Longs representing group IDs.
+     */
+    public static List<Long> getDummyGroupIds() {
+        List<Long> groupIds = new ArrayList<>();
+        groupIds.add(101L);
+        groupIds.add(202L);
+        groupIds.add(303L);
+        // You can add more dummy IDs here if you want
+        return groupIds;
+    }
+
+    /**
      * Create dummy orders for a group (for checkout testing)
      */
     public static List<OrderBundle> getDummyOrdersForGroup(Long groupId) {
@@ -128,7 +141,7 @@ public class DummyDataProvider {
         OrderBundle order1 = new OrderBundle();
         order1.setId(100L);
         order1.setGroupID(groupId);
-        order1.setDone(true);
+        order1.setIsDone(true);
 
         List<ModifiedItem> items1 = new ArrayList<>();
         ModifiedItem item1 = new ModifiedItem();
@@ -148,7 +161,7 @@ public class DummyDataProvider {
         OrderBundle order2 = new OrderBundle();
         order2.setId(101L);
         order2.setGroupID(groupId);
-        order2.setDone(true);
+        order2.setIsDone(true);
 
         List<ModifiedItem> items2 = new ArrayList<>();
         ModifiedItem item2 = new ModifiedItem();
