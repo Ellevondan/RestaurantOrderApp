@@ -429,30 +429,21 @@
             android:textStyle="bold"
             android:layout_marginBottom="16dp" />
 
-        <!-- ScrollView for order items -->
-        <ScrollView
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/orderSummaryRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1">
+            android:layout_weight="1"
+            tools:listitem="@layout/item_order_summary" />
 
-            <LinearLayout
-                android:id="@+id/orderItemsContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <!-- Order items will be added here dynamically -->
-                <TextView
-                    android:id="@+id/tvEmptyOrder"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="No items selected"
-                    android:textAlignment="center"
-                    android:textColor="#999999"
-                    android:layout_marginTop="32dp" />
-
-            </LinearLayout>
-        </ScrollView>
+        <TextView
+            android:id="@+id/tvEmptyOrder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="No items selected"
+            android:textAlignment="center"
+            android:textColor="#999999"
+            android:layout_marginTop="32dp" />
 
         <!-- Total price -->
         <View
@@ -466,7 +457,7 @@
             android:id="@+id/tvTotal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Total: $0.00"
+            android:text="Total: 0.00 kr"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textAlignment="textEnd" />
