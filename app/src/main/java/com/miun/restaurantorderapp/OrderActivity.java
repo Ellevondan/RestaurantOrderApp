@@ -3,6 +3,9 @@ package com.miun.restaurantorderapp;
 import static android.widget.Toast.LENGTH_LONG;
 import static android.widget.Toast.LENGTH_SHORT;
 
+import static androidx.fragment.app.FragmentManager.TAG;
+
+import android.nfc.Tag;
 import android.os.Bundle;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -49,7 +52,6 @@ public class OrderActivity extends AppCompatActivity implements CustomizationFra
 
     // CLASS VARIABLES
     private MockApiService apiService;
-    private PollingService pollingService;
     private Long groupId;
     private int tableNumber;
     private List<MenuItem> menuItems;
@@ -63,7 +65,6 @@ public class OrderActivity extends AppCompatActivity implements CustomizationFra
 
         // 1. Init API service
         apiService = new MockApiService();
-        pollingService = new PollingService();
 
         // 2. Hämta Intent data
         tableNumber = getIntent().getIntExtra("TABLE_NUMBER", -1);
@@ -138,7 +139,7 @@ public class OrderActivity extends AppCompatActivity implements CustomizationFra
                         "Order sent! ID: " + result.getId(), LENGTH_SHORT).show();
 
                 // Starta polling
-                pollingService.startPolling(result.getId());
+                startPollingService(result.getId());
 
                 // Töm listan
                 selectedItems.clear();
@@ -151,6 +152,13 @@ public class OrderActivity extends AppCompatActivity implements CustomizationFra
                         "Failed: " + error, LENGTH_LONG).show();
             }
         });
+    }
+    public static final String TAG = "FragmentManager";
+    private void startPollingService(Long orderId) {
+        Intent intent = new Intent(this, PollingService.class);
+        intent.putExtra("orderId", orderId);
+        startService(intent);
+        Log.d(TAG, "Started PollingService for order: " + orderId);
     }
 
     private void setupDishButtons() {
