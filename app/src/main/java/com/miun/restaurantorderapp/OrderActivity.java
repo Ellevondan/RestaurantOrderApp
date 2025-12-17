@@ -4,31 +4,32 @@ import static android.widget.Toast.LENGTH_LONG;
 import static android.widget.Toast.LENGTH_SHORT;
 
 import android.os.Bundle;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentTransaction;
 
 import android.view.View;
 import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
-import android.widget.Button;
+
 import android.content.Intent;
 
 
 import com.miun.restaurantorderapp.models.MenuItem;
 import com.miun.restaurantorderapp.models.ModifiedItem;
-import android.os.Bundle;
+
 import android.util.Log;
-import androidx.appcompat.app.AppCompatActivity;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 import com.miun.restaurantorderapp.network.ApiCallback;
 import com.miun.restaurantorderapp.network.MockApiService;
 import com.miun.restaurantorderapp.models.OrderBundle;
 import com.miun.restaurantorderapp.network.PollingService;
 
+import android.widget.TextView;
 import android.widget.Toast;
 import java.util.ArrayList;
-import android.content.SharedPreferences;
-
+import java.util.Locale;
 
 
 /**
@@ -45,7 +46,7 @@ import android.content.SharedPreferences;
  *
  * Flow: Table Selection Screen -> Order Placement (this screen) -> Submit orders to server
  */
-public class OrderActivity extends AppCompatActivity implements CustomizationFragment.CustomizationListener {
+public class OrderActivity extends AppCompatActivity implements CustomizationFragment.CustomizationListener, OrderSummaryAdapter.OnItemRemovedListener{
 
     // CLASS VARIABLES
     private MockApiService apiService;
@@ -55,6 +56,12 @@ public class OrderActivity extends AppCompatActivity implements CustomizationFra
     private List<MenuItem> menuItems;
     private List<ModifiedItem> selectedItems;
     private Button buttonSendOrder;
+
+    //UI for order summary
+    private RecyclerView orderSummaryRecyclerView;
+    private OrderSummaryAdapter orderSummaryAdapter;
+    private TextView tvEmptyOrder;
+    private TextView tvTotal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,10 +82,22 @@ public class OrderActivity extends AppCompatActivity implements CustomizationFra
 
         // 4. Init UI
         buttonSendOrder = findViewById(R.id.buttonSendOrder);
+        tvEmptyOrder = findViewById(R.id.tvEmptyOrder);
+        tvTotal = findViewById(R.id.tvTotal);
+
         setupButtons();
+        setupOrderSummaryRecyclerView();
+        updateSummaryUI();
 
         // 5. Hämta meny (SIST!)
         fetchMenu();
+    }
+
+    private void setupOrderSummaryRecyclerView(){
+        orderSummaryRecyclerView = findViewById(R.id.orderSummaryRecyclerView);
+        orderSummaryRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        orderSummaryAdapter = new OrderSummaryAdapter(selectedItems, this);
+        orderSummaryRecyclerView.setAdapter(orderSummaryAdapter);
     }
     @Override
     public void onItemCustomized(ModifiedItem item) {
@@ -87,7 +106,34 @@ public class OrderActivity extends AppCompatActivity implements CustomizationFra
                 "Added: " + item.getName() + " (Total: " + selectedItems.size() + ")",
                 LENGTH_SHORT).show();
         // updateUI(); // Om du har en metod för att uppdatera UI
+        orderSummaryAdapter.notifyItemInserted(selectedItems.size() - 1);
+        updateSummaryUI();
     }
+
+    @Override
+    public void onItemRemoved(ModifiedItem item) {
+        int position = selectedItems.indexOf(item);
+        if (position != -1) {
+            selectedItems.remove(position);
+            orderSummaryAdapter.notifyItemRemoved(position);
+            Toast.makeText(this, "Removed: " + item.getName(), LENGTH_SHORT).show();
+            updateSummaryUI();
+        }
+    }
+
+    private void updateSummaryUI() {
+        boolean empty = selectedItems.isEmpty();
+        tvEmptyOrder.setVisibility(empty ? View.VISIBLE : View.GONE);
+
+        double total = 0.0;
+        for (ModifiedItem item : selectedItems) {
+            int qty = item.getQuantity() != null ? item.getQuantity() : 1;
+            double unitPrice = item.getPrice() != null ? item.getPrice() : 0.0;
+            total += qty * unitPrice;
+        }
+        tvTotal.setText(String.format(Locale.getDefault(), "Total: %.2f kr", total));
+    }
+
     private void fetchMenu() {
         apiService.fetchMenu(new ApiCallback<List<MenuItem>>() {
             @Override
@@ -140,9 +186,12 @@ public class OrderActivity extends AppCompatActivity implements CustomizationFra
                 // Starta polling
                 pollingService.startPolling(result.getId());
 
+                int itemCount = selectedItems.size();
                 // Töm listan
                 selectedItems.clear();
                 // updateUI();
+                orderSummaryAdapter.notifyItemRangeRemoved(0, itemCount);
+                updateSummaryUI();
             }
 
             @Override
