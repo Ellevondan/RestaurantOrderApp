@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
+import android.widget.Toast;
 
 import com.miun.restaurantorderapp.models.OrderStatusResponse;
 
@@ -63,6 +64,14 @@ public class PollingService extends Service {
 
     private void showNotification() {
         // TODO: Implementera notification för waiter
+        Handler mainHandler = new Handler(Looper.getMainLooper());
+        mainHandler.post(() ->
+                Toast.makeText(
+                        getApplicationContext(),
+                        "Order " + currentOrderId + " är klar!",
+                        Toast.LENGTH_LONG
+                ).show()
+        );
     }
 
     private void stopPolling() {
