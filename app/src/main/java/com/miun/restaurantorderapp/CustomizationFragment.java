@@ -179,8 +179,14 @@ public class CustomizationFragment extends DialogFragment {
         String specialInstructions = etSpecialInstructions.getText().toString().trim();
         String comments = etComments.getText().toString().trim();
 
+        String name = menuItem.getName();
+        Double price = menuItem.getPrice();
         // Skapa ModifiedItem
         ModifiedItem modifiedItem = new ModifiedItem(menuItem);
+
+        modifiedItem.setName(name);
+        modifiedItem.setPrice(price);
+
         modifiedItem.setQuantity(quantity);
         modifiedItem.setSelectedAllergens(selectedAllergens);
         modifiedItem.setSpecialInstructions(specialInstructions);

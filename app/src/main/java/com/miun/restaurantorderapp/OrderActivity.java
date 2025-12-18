@@ -104,6 +104,7 @@ public class OrderActivity extends AppCompatActivity implements CustomizationFra
     @Override
     public void onItemCustomized(ModifiedItem item) {
         selectedItems.add(item);
+        Log.d(TAG, "Created ModifiiiiiedItem: " + item.getName());
         Toast.makeText(this,
                 "Added: " + item.getName() + " (Total: " + selectedItems.size() + ")",
                 LENGTH_SHORT).show();

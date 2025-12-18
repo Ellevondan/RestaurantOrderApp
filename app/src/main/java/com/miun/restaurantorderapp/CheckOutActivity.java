@@ -2,6 +2,7 @@ package com.miun.restaurantorderapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -145,10 +146,21 @@ public class CheckOutActivity extends AppCompatActivity {
                     for (com.miun.restaurantorderapp.models.ModifiedItem mi : items) {
                         if (mi == null) continue;
 
+                        Log.d("CHECKOUT",
+                                "name=" + mi.getName()
+                                        + " price=" + mi.getPrice()
+                                        + " originalId=" + mi.getOriginalId()
+                                        + " qty=" + mi.getQuantity()
+                        );
+
+
                         Long menuId = mi.getOriginalId(); // must map to MenuItem.id via JSON "originalID"
                         String name = (mi.getName() != null) ? mi.getName() : "Unknown";
                         int qty = (mi.getQuantity() != null) ? mi.getQuantity() : 0;
-
+                        Log.d("CHECKOUT",
+                                "name:" + name
+                        );
+                        Double price = (mi.getPrice() != null) ? mi.getPrice() : 0;
                         MenuItem menuItem = (menuId != null) ? menuById.get(menuId) : null;
                         double unitPrice =
                                 (menuItem != null && menuItem.getPrice() != null)
@@ -159,7 +171,7 @@ public class CheckOutActivity extends AppCompatActivity {
 
                         OrderItem existing = grouped.get(key);
                         if (existing == null) {
-                            grouped.put(key, new OrderItem(name, qty, unitPrice));
+                            grouped.put(key, new OrderItem(name, qty, price));
                         } else {
                             existing.addQuantity(qty);
                             existing.setPriceIfMissing(unitPrice);
@@ -173,6 +185,7 @@ public class CheckOutActivity extends AppCompatActivity {
                 updateTotals();
 
                 buttonConfirmPayment.setEnabled(true);
+
             }
 
             @Override
@@ -252,7 +265,16 @@ public class CheckOutActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(@NonNull OrderItemViewHolder holder, int position) {
             OrderItem item = items.get(position);
+
+            Log.d("CHECKOUT",
+                    "nameeeeeee:" + item.getName()
+            );
+            Log.d("CHECKOUT",
+                    "priceeeee:" + item.getPrice()
+            );
+
             holder.itemName.setText(item.getName());
+
             holder.itemQuantity.setText(String.format(Locale.getDefault(), "Qty: %d", item.getQuantity()));
             holder.itemPrice.setText(String.format(Locale.getDefault(), "%.0f SEK", item.getPrice() * item.getQuantity()));
         }
