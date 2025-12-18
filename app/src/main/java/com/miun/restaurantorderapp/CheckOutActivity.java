@@ -123,9 +123,22 @@ public class CheckOutActivity extends AppCompatActivity {
             @Override
             public void onSuccess(List<OrderBundle> result) {
 
+                // ================================
+                // TEMPORARY WORKAROUND:
+                // Backend does NOT filter by groupId.
+                // We therefore fetch ALL orders and
+                // filter them here in the app.
+                // ================================
+                List<OrderBundle> filteredByGroup = new ArrayList<>();
+                for (OrderBundle bundle : result) {
+                    if (bundle.getGroupId() == groupId) {
+                        filteredByGroup.add(bundle);
+                    }
+                }
+
                 Map<Long, OrderItem> grouped = new HashMap<>();
 
-                for (OrderBundle bundle : result) {
+                for (OrderBundle bundle : filteredByGroup) {
                     List<com.miun.restaurantorderapp.models.ModifiedItem> items = bundle.getOrders();
                     if (items == null || items.isEmpty()) continue;
 
@@ -137,7 +150,10 @@ public class CheckOutActivity extends AppCompatActivity {
                         int qty = (mi.getQuantity() != null) ? mi.getQuantity() : 0;
 
                         MenuItem menuItem = (menuId != null) ? menuById.get(menuId) : null;
-                        double unitPrice = (menuItem != null && menuItem.getPrice() != null) ? menuItem.getPrice() : 0.0;
+                        double unitPrice =
+                                (menuItem != null && menuItem.getPrice() != null)
+                                        ? menuItem.getPrice()
+                                        : 0.0;
 
                         Long key = (menuId != null) ? menuId : (long) name.hashCode();
 
@@ -161,7 +177,8 @@ public class CheckOutActivity extends AppCompatActivity {
 
             @Override
             public void onError(String error) {
-                Toast.makeText(CheckOutActivity.this, "Failed to load orders: " + error, Toast.LENGTH_SHORT).show();
+                Toast.makeText(CheckOutActivity.this,
+                        "Failed to load orders: " + error, Toast.LENGTH_SHORT).show();
             }
         });
     }

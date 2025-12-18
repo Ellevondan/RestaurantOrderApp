@@ -38,6 +38,9 @@ public class OrderBundle {
     @SerializedName("isDone")
     private Boolean isDone;
 
+    public long getGroupId() {
+        return groupID;
+    }
 
 
     // TODO: Add enum for order categories
