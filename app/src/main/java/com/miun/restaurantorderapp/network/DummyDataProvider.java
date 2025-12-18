@@ -145,7 +145,7 @@ public class DummyDataProvider {
 
         List<ModifiedItem> items1 = new ArrayList<>();
         ModifiedItem item1 = new ModifiedItem();
-        item1.setId(1L);
+        item1.setOriginalId(1L);
         item1.setName("Cheeseburger");
         item1.setQuantity(2);
         item1.setSelectedAllergens("milk, eggs");
@@ -165,7 +165,7 @@ public class DummyDataProvider {
 
         List<ModifiedItem> items2 = new ArrayList<>();
         ModifiedItem item2 = new ModifiedItem();
-        item2.setId(4L);
+        item2.setOriginalId(4L);
         item2.setName("Lava Cake");
         item2.setQuantity(1);
         item2.setSelectedAllergens("");

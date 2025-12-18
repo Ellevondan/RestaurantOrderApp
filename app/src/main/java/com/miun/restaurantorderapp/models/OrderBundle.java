@@ -29,8 +29,11 @@ public class OrderBundle {
     @SerializedName("groupID")
     private Long groupID;
 
-    @SerializedName("orders")
+    @SerializedName(value = "orders", alternate = {"Orders"})
     private List<ModifiedItem> orders;
+
+    @SerializedName("modifyType")
+    private String modifyType;
 
     @SerializedName("isDone")
     private Boolean isDone;

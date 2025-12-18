@@ -25,10 +25,16 @@ public class ModifiedItem {
     private String comments;
 
     @SerializedName("orderedAt")
-    private String orderedAt;  // "2025-12-11T12:34:56"
+    private String orderedAt;
 
     @SerializedName("price")
     private Double price;
+
+    @SerializedName("activeTime")
+    private Integer activeTime;
+
+    @SerializedName("waitingTime")
+    private Integer waitingTime;
 
     public ModifiedItem(MenuItem menuItem) {
         this.originalId = menuItem.getId();

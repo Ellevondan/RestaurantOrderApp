@@ -41,19 +41,18 @@ public class MenuItem implements java.io.Serializable{
     @SerializedName("isGlutenFree")
     private Boolean isGlutenFree;
 
-    @SerializedName("activeTime")
+    @SerializedName(value = "activeTime", alternate = {"active_time", "activetime"})
     private Integer activeTime;
 
-    @SerializedName("waitingTime")
+    @SerializedName(value = "waitingTime", alternate = {"waiting_time", "waitingtime"})
     private Integer waitingTime;
 
-    @SerializedName("totalTime")
+    @SerializedName(value = "totalTime", alternate = {"total_time", "totaltime"})
     private Integer totalTime;
 
-    @SerializedName("canSubstitute")
+    @SerializedName(value = "canSubstitute", alternate = {"can_substitute", "cansubstitute"})
     private Boolean canSubstitute;
-
-    @SerializedName("carteAttributesId")
+    @SerializedName(value = "carteAttributesId", alternate = {"carte_attributes_id", "carteattributesid"})
     private Integer carteAttributesId;
 
     // Getters o setters

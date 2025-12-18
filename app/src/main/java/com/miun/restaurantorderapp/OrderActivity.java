@@ -17,6 +17,7 @@ import android.content.Intent;
 
 import com.miun.restaurantorderapp.models.MenuItem;
 import com.miun.restaurantorderapp.models.ModifiedItem;
+import com.miun.restaurantorderapp.network.ApiService;
 
 import android.util.Log;
 
@@ -52,7 +53,7 @@ import java.util.Locale;
 public class OrderActivity extends AppCompatActivity implements CustomizationFragment.CustomizationListener, OrderSummaryAdapter.OnItemRemovedListener{
 
     // CLASS VARIABLES
-    private MockApiService apiService;
+    private ApiService apiService;
     private Long groupId;
     private int tableNumber;
     private List<MenuItem> menuItems;
@@ -71,7 +72,7 @@ public class OrderActivity extends AppCompatActivity implements CustomizationFra
         setContentView(R.layout.activity_order);
 
         // 1. Init API service
-        apiService = new MockApiService();
+        apiService = new ApiService();
 
         // 2. Hämta Intent data
         tableNumber = getIntent().getIntExtra("TABLE_NUMBER", -1);
@@ -174,23 +175,19 @@ public class OrderActivity extends AppCompatActivity implements CustomizationFra
             return;
         }
 
-        OrderBundle bundle = new OrderBundle();
-        bundle.setGroupID(groupId);
-        bundle.setOrders(new ArrayList<>(selectedItems));
+        OrderBundle bundle = new OrderBundle(groupId, selectedItems);
 
-        apiService.sendOrder(bundle, new ApiCallback<OrderBundle>() {
+        apiService.sendOrder(bundle, new ApiCallback<Long>() {
             @Override
-            public void onSuccess(OrderBundle result) {
+            public void onSuccess(Long orderId) {
                 Toast.makeText(OrderActivity.this,
-                        "Order sent! ID: " + result.getId(), LENGTH_SHORT).show();
+                        "Order sent! ID: " + orderId, LENGTH_SHORT).show();
 
                 // Starta polling
-                startPollingService(result.getId());
+                startPollingService(orderId);
 
                 int itemCount = selectedItems.size();
-                // Töm listan
                 selectedItems.clear();
-                // updateUI();
                 orderSummaryAdapter.notifyItemRangeRemoved(0, itemCount);
                 updateSummaryUI();
             }

@@ -22,6 +22,8 @@ import com.miun.restaurantorderapp.models.MenuItem;
 import com.miun.restaurantorderapp.models.OrderBundle;
 import com.miun.restaurantorderapp.network.ApiCallback;
 import com.miun.restaurantorderapp.network.MockApiService;
+import com.miun.restaurantorderapp.network.ApiService;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,7 +45,7 @@ public class CheckOutActivity extends AppCompatActivity {
     private final List<OrderItem> orderItems = new ArrayList<>();
     private OrderItemsAdapter adapter;
 
-    private MockApiService api;
+    private ApiService api;
     private long groupId = -1;
 
     private final Map<Long, MenuItem> menuById = new HashMap<>();
@@ -61,7 +63,7 @@ public class CheckOutActivity extends AppCompatActivity {
         // Prevent confirming payment before data is loaded
         buttonConfirmPayment.setEnabled(false);
 
-        api = new MockApiService();
+        api = new ApiService();
 
         groupId = getIntent().getLongExtra(EXTRA_GROUP_ID, -1);
         int tableNumber = getIntent().getIntExtra(EXTRA_TABLE_NUMBER, -1);

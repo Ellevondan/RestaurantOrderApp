@@ -56,10 +56,10 @@ public class ApiService {
     }
 
     // 2) Skicka order
-    public void sendOrder(OrderBundle orderBundle, ApiCallback<OrderBundle> callback) {
-        api.sendOrder(orderBundle).enqueue(new Callback<OrderBundle>() {
+    public void sendOrder(OrderBundle orderBundle, ApiCallback<Long> callback) {
+        api.sendOrder(orderBundle).enqueue(new Callback<Long>() {
             @Override
-            public void onResponse(Call<OrderBundle> call, Response<OrderBundle> response) {
+            public void onResponse(Call<Long> call, Response<Long> response) {
                 if (response.isSuccessful() && response.body() != null) {
                     callback.onSuccess(response.body());
                 } else {
@@ -68,7 +68,7 @@ public class ApiService {
             }
 
             @Override
-            public void onFailure(Call<OrderBundle> call, Throwable t) {
+            public void onFailure(Call<Long> call, Throwable t) {
                 callback.onError("Network error: " + t.getMessage());
             }
         });
@@ -169,7 +169,52 @@ public class ApiService {
         });
     }
 
+    /**
+     * Hämta alla aktiva group IDs från servern
+     */
+    public void getGroupIds(ApiCallback<List<Long>> callback) {
+        api.getActiveGroupIds().enqueue(new Callback<List<Long>>() {
+            @Override
+            public void onResponse(Call<List<Long>> call, Response<List<Long>> response) {
+                if (response.isSuccessful() && response.body() != null) {
+                    // Uppdatera lokal lista
+                    activeGroupIds.clear();
+                    activeGroupIds.addAll(response.body());
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onError("Fetch group IDs failed: " + response.code());
+                }
+            }
 
+            @Override
+            public void onFailure(Call<List<Long>> call, Throwable t) {
+                callback.onError("Network error: " + t.getMessage());
+            }
+        });
+    }
+
+    /**
+     * Hämta lokalt cachade group IDs (utan att kontakta servern)
+     */
+    public List<Long> getCachedGroupIds() {
+        return new ArrayList<>(activeGroupIds);
+    }
+
+    /**
+     * Lägg till ett group ID i listan (när createGroup anropas)
+     */
+    public void addGroupId(Long groupId) {
+        if (!activeGroupIds.contains(groupId)) {
+            activeGroupIds.add(groupId);
+        }
+    }
+
+    /**
+     * Ta bort ett group ID från listan (när deleteGroup anropas)
+     */
+    public void removeGroupId(Long groupId) {
+        activeGroupIds.remove(groupId);
+    }
 
 }
 

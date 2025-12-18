@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
     // - Variable to track currently selected table number
     // - Reference to ApiService for server communication
     // - SharedPreferences to store group ID
-    private MockApiService apiService;
+    private ApiService apiService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-        apiService = new MockApiService();
+        apiService = new ApiService();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
