@@ -13,14 +13,14 @@ public class PollingService extends Service {
 
     private Handler handler;
     private Runnable pollingRunnable;
-    private MockApiService apiRepository;
+    private ApiService apiRepository;
     private Long currentOrderId;
     private static final int POLLING_INTERVAL = 1000; // 1 sek
 
     @Override
     public void onCreate() {
         super.onCreate();
-        apiRepository = new MockApiService();
+        apiRepository = new ApiService();
     }
 
     @Override
@@ -49,6 +49,7 @@ public class PollingService extends Service {
         apiRepository.checkOrderStatus(currentOrderId, new ApiCallback<OrderStatusResponse>() {
             @Override
             public void onSuccess(OrderStatusResponse result) {
+                android.util.Log.d("PollingService", "Status: isDone=" + result.isDone());
                 if (result.isDone()) {
                     showNotification();
                     stopPolling();

@@ -207,21 +207,22 @@ public class CheckOutActivity extends AppCompatActivity {
     private void setupButtonListeners() {
         buttonBack.setOnClickListener(view -> finish());
 
-        buttonConfirmPayment.setOnClickListener(view -> api.deleteGroup(groupId, new ApiCallback<>() {
-            @Override
-            public void onSuccess(Void result) {
-                Toast.makeText(CheckOutActivity.this, "Payment Confirmed.", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(CheckOutActivity.this, MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
-                finish();
+        buttonConfirmPayment.setOnClickListener(view -> {
+            // Clear the table-group mapping locally (don't delete from database)
+            int tableNumber = getIntent().getIntExtra(EXTRA_TABLE_NUMBER, -1);
+            if (tableNumber > 0) {
+                MainActivity.clearTableGroup(
+                        getSharedPreferences("TableGroupPrefs", MODE_PRIVATE),
+                        tableNumber
+                );
             }
 
-            @Override
-            public void onError(String error) {
-                Toast.makeText(CheckOutActivity.this, "Failed to confirm payment: " + error, Toast.LENGTH_SHORT).show();
-            }
-        }));
+            Toast.makeText(CheckOutActivity.this, "Payment Confirmed.", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(CheckOutActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
+        });
     }
 
     private static class OrderItem {

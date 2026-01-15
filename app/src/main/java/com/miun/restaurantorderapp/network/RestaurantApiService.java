@@ -166,6 +166,6 @@ public interface RestaurantApiService {
     /**
      * FINNS INTE I BACKEND - kommer att ge 404
      */
-    @DELETE("groups/{groupId}")
+    @DELETE("pos/{groupId}")
     Call<Void> deleteGroup(@Path("groupId") long groupId);
 }

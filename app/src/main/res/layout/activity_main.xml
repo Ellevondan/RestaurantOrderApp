@@ -55,8 +55,6 @@
         android:text="Select Table"
         android:textSize="32sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toStartOf="@+id/btnContinueOrder"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -205,19 +203,6 @@
         </LinearLayout>
 
     </LinearLayout>
-
-    <Button
-        android:id="@+id/btnContinueOrder"
-        android:layout_width="197dp"
-        android:layout_height="50dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="75dp"
-        android:layout_marginBottom="13dp"
-        android:text="Continue a Order"
-        app:layout_constraintBottom_toTopOf="@+id/buttonContainer"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
 
     <!-- TODO: Optional - Add status bar at bottom -->
     <!-- - Display connection status to server -->
